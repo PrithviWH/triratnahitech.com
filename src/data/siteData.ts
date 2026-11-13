@@ -3,7 +3,7 @@ import {
   type ProjectCategory,
   type ProjectPreviewTheme,
 } from '../utils/projectShowcase';
-import { buildWhatsAppUrl } from '../utils/siteLogic';
+import { buildWhatsAppUrl, type RegionalLanguage } from '../utils/siteLogic';
 
 export interface NavItem {
   index: string;
@@ -609,3 +609,137 @@ export const BLOG_CATEGORIES = [
   'Digital Marketing',
   'Guidance',
 ] as const;
+
+export interface RegionalQuickPrompt {
+  id: string;
+  label: string;
+  template: string;
+}
+
+export interface RegionalSummaryContent {
+  code: RegionalLanguage;
+  nativeLabel: string;
+  englishLabel: string;
+  eyebrow: string;
+  headline: string;
+  summary: string;
+  highlights: [string, string, string];
+  contactPromptHint: string;
+  ctaLabel: string;
+  prompts: RegionalQuickPrompt[];
+}
+
+export const REGIONAL_SUPPORT_COPY: Record<RegionalLanguage, RegionalSummaryContent> = {
+  en: {
+    code: 'en',
+    nativeLabel: 'English',
+    englishLabel: 'English',
+    eyebrow: 'Pune & Regional Outreach',
+    headline: 'Websites, Local SEO & Guidance — in Your Language',
+    summary:
+      'From Pune businesses to Devanagari portals like marathi.brambedkar.in and hindi.brambedkar.in, we work comfortably in English, Marathi, and Hindi.',
+    highlights: [
+      'Responsive websites & regional portals',
+      'Local SEO, Google Business & paid ads',
+      '1-to-1 guidance & digital support',
+    ],
+    contactPromptHint:
+      'Prefer starting quickly? Choose a topic below to pre-fill your enquiry message, or write directly in English, Marathi, or Hindi.',
+    ctaLabel: 'Start Enquiry',
+    prompts: [
+      {
+        id: 'en-web',
+        label: 'New Business Website',
+        template:
+          'Hello Triratna Hi-Tech team, we are looking to design and build a responsive website for our business in Pune. Please share the next steps.',
+      },
+      {
+        id: 'en-seo',
+        label: 'Local SEO & Google Listing',
+        template:
+          'Hello, we want to improve our Google search rankings, Google Business listing, and customer enquiries in Pune.',
+      },
+      {
+        id: 'en-portal',
+        label: 'Marathi / Hindi Portal',
+        template:
+          'Hello, we would like to build a Marathi or Hindi web portal with clean Devanagari typography and mobile readability.',
+      },
+    ],
+  },
+  mr: {
+    code: 'mr',
+    nativeLabel: 'मराठी',
+    englishLabel: 'Marathi',
+    eyebrow: 'पुणे आणि प्रादेशिक संवाद',
+    headline: 'तुमच्या व्यवसायासाठी वेबसाइट, SEO आणि डिजिटल मार्गदर्शन — आता मराठीतही',
+    summary:
+      'गेल्या ६+ वर्षांपासून त्रिरत्न हाय-टेक पुणे आणि परिसरातील व्यवसायांसाठी वेबसाइट डेव्हलपमेंट, लोकल SEO, जाहिराती आणि marathi.brambedkar.in सारखी देवनागरी पोर्टल्स तयार करत आहे.',
+    highlights: [
+      'मोबाईल-फ्रेंडली वेबसाइट व मराठी पोर्टल्स',
+      'गुगल बिझनेस लिस्टिंग, SEO आणि जाहिराती',
+      'व्यवसाय वाढीसाठी थेट व सोपे मार्गदर्शन',
+    ],
+    contactPromptHint:
+      'तुम्ही मराठीतही तुमचा संदेश पाठवू शकता. खालीलपैकी एक विषय निवडून संदेश आपोआप भरा किंवा स्वतःची माहिती लिहा.',
+    ctaLabel: 'मराठीतून संपर्क साधा',
+    prompts: [
+      {
+        id: 'mr-web',
+        label: 'व्यवसायासाठी नवीन वेबसाइट',
+        template:
+          'नमस्कार त्रिरत्न हाय-टेक टीम, मला माझ्या व्यवसायासाठी एक आधुनिक आणि मोबाईलवर छान दिसणारी वेबसाइट बनवून हवी आहे. कृपया पुढील माहिती शेअर करा.',
+      },
+      {
+        id: 'mr-seo',
+        label: 'लोकल SEO व Google लिस्टिंग',
+        template:
+          'नमस्कार, मला आमचा व्यवसाय पुण्यातील ग्राहकांपर्यंत पोहोचवण्यासाठी लोकल SEO आणि Google बिझनेस लिस्टिंग सुधारण्यासाठी मदत हवी आहे.',
+      },
+      {
+        id: 'mr-portal',
+        label: 'मराठी बातम्या / माहिती पोर्टल',
+        template:
+          'नमस्कार, आम्हाला स्वच्छ देवनागरी फॉन्ट आणि जलद लोड होणारे मराठी वेब पोर्टल सुरू करायचे आहे. कृपया मार्गदर्शन करा.',
+      },
+    ],
+  },
+  hi: {
+    code: 'hi',
+    nativeLabel: 'हिन्दी',
+    englishLabel: 'Hindi',
+    eyebrow: 'पुणे और क्षेत्रीय भाषा सहयोग',
+    headline: 'आपके व्यवसाय के लिए वेबसाइट, SEO और डिजिटल मार्गदर्शन — अब हिन्दी में भी',
+    summary:
+      'पिछले 6+ वर्षों से त्रिरत्न हाय-टेक पुणे के व्यवसायों के लिए वेबसाइट डेवलपमेंट, लोकल SEO, पेड विज्ञापन और hindi.brambedkar.in जैसे देवनागरी वेब पोर्टल तैयार कर रहा है।',
+    highlights: [
+      'तेज़, रिस्पॉन्सिव वेबसाइट और देवनागरी पोर्टल',
+      'लोकल SEO, गूगल लिस्टिंग और डिजिटल प्रचार',
+      'ऑनलाइन ग्रोथ के लिए सरल और व्यावहारिक मार्गदर्शन',
+    ],
+    contactPromptHint:
+      'आप हिन्दी में भी अपना संदेश भेज सकते हैं। नीचे से कोई विषय चुनकर संदेश भरें या सीधे अपनी आवश्यकता लिखें।',
+    ctaLabel: 'हिन्दी में संपर्क करें',
+    prompts: [
+      {
+        id: 'hi-web',
+        label: 'व्यापार के लिए नई वेबसाइट',
+        template:
+          'नमस्ते त्रिरत्न हाय-टेक टीम, मैं अपने व्यवसाय के लिए एक प्रोफेशनल और मोबाइल-फ्रेंडली वेबसाइट बनवाना चाहता हूँ। कृपया आगे की जानकारी साझा करें।',
+      },
+      {
+        id: 'hi-seo',
+        label: 'लोकल SEO और गूगल लिस्टिंग',
+        template:
+          'नमस्ते, हमें पुणे में अपने ग्राहकों तक पहुँच बढ़ाने के लिए लोकल SEO, गूगल लिस्टिंग और डिजिटल मार्केटिंग में सहायता चाहिए।',
+      },
+      {
+        id: 'hi-portal',
+        label: 'हिन्दी समाचार / जानकारी पोर्टल',
+        template:
+          'नमस्ते, हम साफ देवनागरी टाइपोग्राफी और तेज़ मोबाइल अनुभव वाला एक हिन्दी वेब पोर्टल शुरू करना चाहते हैं। कृपया संपर्क करें।',
+      },
+    ],
+  },
+};
+

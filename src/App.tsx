@@ -16,6 +16,7 @@ import {
 import { SeoHead } from './components/SeoHead';
 import { FloatingWhatsAppButton } from './components/FloatingWhatsAppButton';
 import { FirebaseProvider } from './components/FirebaseProvider';
+import { extractHashTargetId, resolveScrollBehavior } from './utils/siteLogic';
 
 import HomePage from './pages/HomePage';
 import ServicesPage from './pages/ServicesPage';
@@ -33,14 +34,58 @@ function ScrollToTop() {
   const { pathname, hash } = useLocation();
 
   useEffect(() => {
-    if (hash) {
-      const target = document.querySelector(hash);
-      if (target) {
-        target.scrollIntoView();
-        return;
-      }
+    const targetId = extractHashTargetId(hash);
+    if (!targetId) {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      return;
     }
-    window.scrollTo({ top: 0, behavior: 'auto' });
+
+    const prefersReduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const behavior = resolveScrollBehavior(prefersReduced);
+
+    let cancelled = false;
+    let rafId: number | null = null;
+    let pollId: number | null = null;
+    let startTimerId: number | null = null;
+
+    const tryScrollToTarget = (): boolean => {
+      if (cancelled) return true;
+      const target = document.getElementById(targetId);
+      if (!target) return false;
+      rafId = window.requestAnimationFrame(() => {
+        if (!cancelled) {
+          target.scrollIntoView({ behavior, block: 'start' });
+        }
+      });
+      return true;
+    };
+
+    // Immediate hit for in-page anchor clicks (e.g., #team while already on /about)
+    if (!tryScrollToTarget()) {
+      // Wait just past the 0.22s AnimatePresence mode="wait" exit transition before polling for mount
+      let attempts = 0;
+      startTimerId = window.setTimeout(() => {
+        if (tryScrollToTarget()) return;
+        pollId = window.setInterval(() => {
+          attempts += 1;
+          if (tryScrollToTarget() || attempts >= 20) {
+            if (pollId !== null) {
+              window.clearInterval(pollId);
+              pollId = null;
+            }
+          }
+        }, 40);
+      }, 240);
+    }
+
+    return () => {
+      cancelled = true;
+      if (startTimerId !== null) window.clearTimeout(startTimerId);
+      if (pollId !== null) window.clearInterval(pollId);
+      if (rafId !== null) window.cancelAnimationFrame(rafId);
+    };
   }, [pathname, hash]);
 
   return null;

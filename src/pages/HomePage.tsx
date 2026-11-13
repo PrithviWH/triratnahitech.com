@@ -13,6 +13,7 @@ import { ShatterSegment, ShatterType } from '../components/ShatterType';
 import { ShinyText } from '../components/ShinyText';
 import { HomeFaqAccordion } from '../components/HomeFaqAccordion';
 import { SeoAuditTool } from '../components/SeoAuditTool';
+import { RegionalSummaryStrip } from '../components/RegionalSummaryStrip';
 
 const HERO_SHATTER_SEGMENTS: ShatterSegment[] = [
   {
@@ -142,6 +143,8 @@ export default function HomePage() {
               </div>
             </motion.div>
           </div>
+
+          <RegionalSummaryStrip />
 
           <GemDivider />
         </div>

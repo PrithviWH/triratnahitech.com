@@ -16,7 +16,7 @@
   html {
     background-color: #FAFAFA;
     color: #18181B;
-    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'DM Sans', 'Noto Sans Devanagari', system-ui, -apple-system, sans-serif;
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -35,7 +35,7 @@
 }
 
 .font-display {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', system-ui, sans-serif;
 }
 
 .font-serif-accent {
@@ -43,7 +43,7 @@
 }
 
 .font-body {
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: 'DM Sans', 'Noto Sans Devanagari', system-ui, sans-serif;
 }
 
 .tabular-nums {

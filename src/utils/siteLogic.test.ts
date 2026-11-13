@@ -2,10 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   buildWhatsAppUrl,
+  extractHashTargetId,
   filterByCategory,
   getNextIndex,
   getPageSeo,
   getPrevIndex,
+  parseRegionalLanguage,
+  resolveScrollBehavior,
   toggleAccordionId,
   validateLeadForm,
   validateNewsletterEmail,
@@ -88,4 +91,22 @@ test('toggleAccordionId opens closed items, switches active items, and collapses
   assert.equal(toggleAccordionId('faq-1', ''), null);
 });
 
+test('parseRegionalLanguage normalizes query values safely to en, mr, or hi', () => {
+  assert.equal(parseRegionalLanguage('mr'), 'mr');
+  assert.equal(parseRegionalLanguage('MARATHI'), 'mr');
+  assert.equal(parseRegionalLanguage('hi'), 'hi');
+  assert.equal(parseRegionalLanguage('hindi'), 'hi');
+  assert.equal(parseRegionalLanguage('en'), 'en');
+  assert.equal(parseRegionalLanguage('fr'), 'en');
+  assert.equal(parseRegionalLanguage(null), 'en');
+});
+
+test('extractHashTargetId and resolveScrollBehavior handle hash IDs and motion preference', () => {
+  assert.equal(extractHashTargetId('#team'), 'team');
+  assert.equal(extractHashTargetId('  #career-form '), 'career-form');
+  assert.equal(extractHashTargetId('#'), null);
+  assert.equal(extractHashTargetId(''), null);
+  assert.equal(resolveScrollBehavior(false), 'smooth');
+  assert.equal(resolveScrollBehavior(true), 'auto');
+});
 

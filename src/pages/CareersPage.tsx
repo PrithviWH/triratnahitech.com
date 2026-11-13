@@ -144,7 +144,7 @@ export default function CareersPage({
             )}
           </div>
 
-          <div id="career-form" className="lg:col-span-7">
+          <div id="career-form" className="lg:col-span-7 scroll-mt-20">
             <div className="rounded-2xl border border-zinc-200 bg-white card-elevated p-7 sm:p-10">
               <SectionLabel number="03" label="Application" />
               <h2 className="font-display font-bold text-3xl sm:text-4xl tracking-tight text-[#09090B] mb-6">

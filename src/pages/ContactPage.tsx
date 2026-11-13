@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
-import { Phone, Mail, Clock, MapPin, CheckCircle2 } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
-import { SITE_INFO } from '../data/siteData';
-import { LeadFormErrors, validateLeadForm } from '../utils/siteLogic';
+import React, { useEffect, useState } from 'react';
+import { Phone, Mail, Clock, MapPin, CheckCircle2, Languages } from 'lucide-react';
+import { useLocation, useSearchParams } from 'react-router-dom';
+import { REGIONAL_SUPPORT_COPY, SITE_INFO } from '../data/siteData';
+import {
+  LeadFormErrors,
+  parseRegionalLanguage,
+  type RegionalLanguage,
+  validateLeadForm,
+} from '../utils/siteLogic';
 import { isFirestoreQuotaError } from '../utils/firestorePayloads';
 import { submitEnquiry } from '../services/firestoreService';
 import { Button, SectionLabel, ToastState } from '../components/UiPrimitives';
@@ -14,6 +19,10 @@ export default function ContactPage({
   onToast: (toast: ToastState) => void;
 }) {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const [promptLang, setPromptLang] = useState<RegionalLanguage>(() =>
+    parseRegionalLanguage(searchParams.get('lang')),
+  );
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -21,6 +30,15 @@ export default function ContactPage({
   const [errors, setErrors] = useState<LeadFormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    const paramLang = searchParams.get('lang');
+    if (paramLang) {
+      setPromptLang(parseRegionalLanguage(paramLang));
+    }
+  }, [searchParams]);
+
+  const activeRegional = REGIONAL_SUPPORT_COPY[promptLang];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,6 +157,58 @@ export default function ContactPage({
               </div>
             ) : (
               <form onSubmit={handleSubmit} noValidate className="space-y-5">
+                <div className="rounded-xl border border-zinc-200 bg-[#FAFAFA] p-4 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="inline-flex items-center gap-1.5 font-display text-xs font-semibold text-[#0F4C5C]">
+                      <Languages className="w-3.5 h-3.5 text-[#C84B13]" aria-hidden="true" />
+                      <span>Quick Enquiry Prompt</span>
+                    </span>
+                    <div
+                      role="tablist"
+                      aria-label="Enquiry prompt language"
+                      className="inline-flex items-center rounded-lg border border-zinc-200 bg-white p-0.5"
+                    >
+                      {(['en', 'mr', 'hi'] as RegionalLanguage[]).map((code) => (
+                        <button
+                          key={code}
+                          type="button"
+                          role="tab"
+                          aria-selected={promptLang === code}
+                          onClick={() => setPromptLang(code)}
+                          className={`px-2.5 py-1 rounded-md text-xs font-display font-semibold cursor-pointer transition-colors ${
+                            promptLang === code
+                              ? 'bg-[#09090B] text-white'
+                              : 'text-zinc-600 hover:text-[#09090B]'
+                          }`}
+                        >
+                          {REGIONAL_SUPPORT_COPY[code].nativeLabel}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <p className="font-body text-xs text-zinc-600 leading-relaxed" lang={promptLang}>
+                    {activeRegional.contactPromptHint}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {activeRegional.prompts.map((prompt) => (
+                      <button
+                        key={prompt.id}
+                        type="button"
+                        lang={promptLang}
+                        onClick={() => {
+                          setMessage(prompt.template);
+                          if (errors.message) {
+                            setErrors((prev) => ({ ...prev, message: undefined }));
+                          }
+                        }}
+                        className="rounded-lg border border-zinc-200 bg-white px-3 py-1.5 text-xs font-body font-medium text-[#09090B] hover:border-[#C84B13] hover:text-[#C84B13] cursor-pointer transition-colors"
+                      >
+                        + {prompt.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <FormField
                   label="Name"
                   name="contact-name"

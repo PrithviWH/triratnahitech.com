@@ -175,4 +175,24 @@ export function toggleAccordionId(
   return currentOpenId === clickedId ? null : clickedId;
 }
 
+export type RegionalLanguage = 'en' | 'mr' | 'hi';
+
+export function parseRegionalLanguage(value?: string | null): RegionalLanguage {
+  const normalized = (value ?? '').trim().toLowerCase();
+  if (normalized === 'mr' || normalized === 'marathi') return 'mr';
+  if (normalized === 'hi' || normalized === 'hindi') return 'hi';
+  return 'en';
+}
+
+export function extractHashTargetId(hash: string): string | null {
+  const trimmed = hash.trim();
+  if (!trimmed.startsWith('#')) return null;
+  const id = trimmed.slice(1).trim();
+  return id.length > 0 ? id : null;
+}
+
+export function resolveScrollBehavior(prefersReducedMotion: boolean): 'auto' | 'smooth' {
+  return prefersReducedMotion ? 'auto' : 'smooth';
+}
+
 

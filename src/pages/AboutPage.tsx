@@ -126,7 +126,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section id="team" className="py-20 sm:py-28 bg-[#FAFAFA] border-b border-zinc-200/80">
+      <section id="team" className="scroll-mt-20 py-20 sm:py-28 bg-[#FAFAFA] border-b border-zinc-200/80">
         <div className="max-w-7xl mx-auto px-5 sm:px-8">
           <SectionLabel number="05" label="People" />
           <h2 className="font-display font-bold text-3xl sm:text-5xl tracking-tight text-[#09090B] mb-10">

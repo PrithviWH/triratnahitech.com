@@ -211,36 +211,78 @@ export const SERVICES_STACK = [
   },
 ];
 
-export const SERVICE_FAQS: FaqItem[] = [
+export type ServiceFaqCategory =
+  | 'Web Development'
+  | 'SEO & Local Search'
+  | 'Digital Growth';
+
+export interface ServiceFaqItem extends FaqItem {
+  category: ServiceFaqCategory;
+}
+
+export const SERVICE_FAQ_CATEGORIES = [
+  'All',
+  'SEO & Local Search',
+  'Web Development',
+  'Digital Growth',
+] as const;
+
+export const SERVICE_FAQS: ServiceFaqItem[] = [
   {
     id: 'faq-1',
-    question: 'What website services do you offer?',
+    category: 'Web Development',
+    question: 'What website design and development services do you offer in Pune?',
     answer:
-      'We design and develop websites tailored to your goals, from business websites and online stores to custom web solutions.',
+      'We design and develop custom business websites, e-commerce stores, property and product catalogues, and regional-language (Marathi and Hindi) portals tailored to Pune businesses—built for fast mobile loading and clear enquiry generation.',
   },
   {
     id: 'faq-2',
-    question: 'Can you help improve my SEO?',
+    category: 'SEO & Local Search',
+    question: 'How do your SEO services improve local rankings for Pune businesses?',
     answer:
-      'Our SEO services include audits, on-page improvements, and practical strategies to help your business become easier to find online.',
+      'Our local SEO workflow covers technical site audits, keyword-focused page structure, Schema.org local business markup, and Google Business Profile optimization so customers in Charholi, Pimpri-Chinchwad, and across Pune find you first.',
   },
   {
     id: 'faq-3',
-    question: 'What digital marketing services are available?',
+    category: 'SEO & Local Search',
+    question: 'How long does it take to see measurable results from SEO?',
     answer:
-      'Yes. We support digital marketing through paid ads, business promotion, Google listings, and online reputation management.',
+      'Technical fixes, indexing improvements, and Google Business Profile updates often show early traction within 3 to 6 weeks, while competitive organic search rankings and steady lead growth typically compound over 3 to 6 months.',
   },
   {
     id: 'faq-4',
-    question: 'Do you provide domains and hosting?',
+    category: 'Web Development',
+    question: 'Will my new website be mobile-friendly, fast, and SEO-ready from day one?',
     answer:
-      'We help with domain registration and web hosting, and can guide you in choosing options that suit your website.',
+      'Yes. Every website is engineered mobile-first with clean semantic HTML, optimized images, OpenGraph and Twitter cards, fast Core Web Vitals performance, and structured headings so search engines can index your pages immediately.',
   },
   {
     id: 'faq-5',
-    question: 'Can you guide my business growth?',
+    category: 'Web Development',
+    question: 'Do you handle domain registration, web hosting, SSL, and maintenance?',
     answer:
-      'Yes. With 6+ years of experience, we offer guidance for business setup, brand building, growth, and digital skills.',
+      'Yes. We assist with domain registration, reliable hosting, SSL security certificates, and ongoing content or technical updates so your team never has to worry about downtime or configuration.',
+  },
+  {
+    id: 'faq-6',
+    category: 'SEO & Local Search',
+    question: 'Can you optimize an existing website for SEO without rebuilding it from scratch?',
+    answer:
+      'Absolutely. We start with a live SEO and accessibility audit of your current site to fix metadata, heading hierarchy, page speed, broken links, and local citations, recommending a redesign only when legacy code blocks growth.',
+  },
+  {
+    id: 'faq-7',
+    category: 'Digital Growth',
+    question: 'What digital marketing and paid advertising services are available?',
+    answer:
+      'Alongside organic SEO, we manage targeted paid ad campaigns, social media promotion, Google listings, and online reputation management to capture immediate high-intent enquiries.',
+  },
+  {
+    id: 'faq-8',
+    category: 'Digital Growth',
+    question: 'Can you guide our internal team on digital skills and AI tools?',
+    answer:
+      'Yes. Backed by 6+ years of practical experience, we provide hands-on guidance for business setup, brand positioning, content workflows, and everyday AI tools so your team can manage digital channels with confidence.',
   },
 ];
 

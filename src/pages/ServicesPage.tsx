@@ -61,12 +61,17 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <section className="py-20 sm:py-28 bg-[#FAFAFA]">
+      <section id="service-faqs" className="scroll-mt-20 py-20 sm:py-28 bg-[#FAFAFA]">
         <div className="max-w-7xl mx-auto px-5 sm:px-8">
-          <SectionLabel number="04" label="Answers" />
-          <h2 className="font-display font-bold text-3xl sm:text-5xl tracking-tight text-[#09090B] mb-10">
-            Service FAQs
-          </h2>
+          <div className="max-w-3xl mb-10 space-y-3">
+            <SectionLabel number="04" label="Answers" />
+            <h2 className="font-display font-bold text-3xl sm:text-5xl tracking-tight text-[#09090B]">
+              SEO &amp; Web Development FAQs
+            </h2>
+            <p className="font-body text-base sm:text-lg text-zinc-600 leading-relaxed">
+              Common questions from Pune businesses about custom website development, local search rankings, Google Business listings, and ongoing digital growth.
+            </p>
+          </div>
           <SplitAccordion items={SERVICE_FAQS} />
         </div>
       </section>

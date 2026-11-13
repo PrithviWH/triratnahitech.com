@@ -89,9 +89,9 @@ export function getPageSeo(pathname: string): PageSeoMeta {
   }
   if (pathname === '/services') {
     return {
-      title: 'Our Services | Triratna Hi-Tech Pune',
+      title: 'Website Design, SEO & Digital Marketing Services | Triratna Hi-Tech Pune',
       description:
-        'Website design and development, SEO, paid campaigns, Google listings, and practical guidance from Triratna Hi-Tech in Pune.',
+        'Explore website design and development, local SEO, paid ads, Google listings, and practical business growth guidance from Triratna Hi-Tech in Pune.',
     };
   }
   if (pathname === '/about') {
@@ -195,4 +195,19 @@ export function resolveScrollBehavior(prefersReducedMotion: boolean): 'auto' | '
   return prefersReducedMotion ? 'auto' : 'smooth';
 }
 
-
+export function buildFaqJsonLd(
+  items: readonly { question: string; answer: string }[],
+): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  };
+}

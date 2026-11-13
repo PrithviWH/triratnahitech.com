@@ -1,6 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
-import { FaqItem } from '../data/siteData';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { AnimatePresence, motion } from 'motion/react';
+import { ArrowRight, ChevronDown } from 'lucide-react';
+import {
+  FaqItem,
+  SERVICE_FAQ_CATEGORIES,
+  ServiceFaqItem,
+} from '../data/siteData';
+import {
+  buildFaqJsonLd,
+  filterByCategory,
+  toggleAccordionId,
+} from '../utils/siteLogic';
 import { GemMarker } from './GemMotif';
 
 export function StickyStackCard({
@@ -50,126 +61,163 @@ export function StickyStackCard({
   );
 }
 
-export function SplitAccordion({ items }: { items: FaqItem[] }) {
-  const [activeId, setActiveId] = useState<string>(items[0]?.id ?? '');
-  const [isDesktop, setIsDesktop] = useState<boolean>(() =>
-    typeof window !== 'undefined' ? window.matchMedia('(min-width: 1024px)').matches : true
-  );
+export function SplitAccordion({
+  items,
+}: {
+  items: readonly (FaqItem | ServiceFaqItem)[];
+}) {
+  const normalizedItems: ServiceFaqItem[] = items.map((item) => ({
+    ...item,
+    category: 'category' in item ? item.category : 'Web Development',
+  }));
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const mq = window.matchMedia('(min-width: 1024px)');
-    const onChange = () => setIsDesktop(mq.matches);
-    onChange();
-    mq.addEventListener('change', onChange);
-    return () => mq.removeEventListener('change', onChange);
-  }, []);
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [openId, setOpenId] = useState<string | null>(normalizedItems[0]?.id ?? null);
 
-  const activeItem = items.find((item) => item.id === activeId) ?? items[0];
+  const visibleItems = filterByCategory(normalizedItems, selectedCategory);
+  const faqSchema = buildFaqJsonLd(normalizedItems);
 
-  if (isDesktop) {
-    return (
-      <div className="grid grid-cols-12 rounded-2xl overflow-hidden border border-zinc-200 bg-white card-elevated">
-        <div className="col-span-6 border-r border-zinc-200 divide-y divide-zinc-200">
-          {items.map((item, idx) => {
-            const isSelected = item.id === activeItem?.id;
+  const handleCategorySelect = (category: string) => {
+    setSelectedCategory(category);
+    const nextVisible = filterByCategory(normalizedItems, category);
+    if (!nextVisible.some((item) => item.id === openId)) {
+      setOpenId(nextVisible[0]?.id ?? null);
+    }
+  };
+
+  return (
+    <div className="space-y-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+
+      {/* Category Filter Bar & Local Pune Context */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div
+          role="group"
+          aria-label="Filter service FAQs by topic"
+          className="inline-flex flex-wrap gap-1.5 p-1.5 rounded-xl bg-white border border-zinc-200/90 self-start"
+        >
+          {SERVICE_FAQ_CATEGORIES.map((category) => {
+            const active = selectedCategory === category;
             return (
               <button
-                key={item.id}
+                key={category}
                 type="button"
-                aria-expanded={isSelected}
-                onClick={() => setActiveId(item.id)}
-                className={`w-full text-left px-6 py-5 flex items-center justify-between gap-4 transition-colors cursor-pointer ${
-                  isSelected
-                    ? 'bg-zinc-50 text-[#09090B]'
-                    : 'bg-white text-zinc-600 hover:text-[#09090B] hover:bg-zinc-50/60'
+                aria-pressed={active}
+                onClick={() => handleCategorySelect(category)}
+                className={`relative px-3.5 py-2 rounded-lg font-display text-xs font-semibold whitespace-nowrap shrink-0 cursor-pointer transition-colors ${
+                  active ? 'text-white' : 'text-zinc-600 hover:text-[#09090B]'
                 }`}
               >
-                <div className="flex items-baseline gap-3.5">
-                  <span
-                    className={`font-display text-xs font-semibold tabular-nums ${
-                      isSelected ? 'text-[#C84B13]' : 'text-zinc-400'
-                    }`}
-                  >
-                    0{idx + 1}
-                  </span>
-                  <span className="font-display font-semibold text-base tracking-tight">
-                    {item.question}
-                  </span>
-                </div>
-                <ChevronRight
-                  className={`w-4 h-4 shrink-0 transition-transform ${
-                    isSelected ? 'translate-x-1 text-[#C84B13]' : 'text-zinc-400'
-                  }`}
-                  aria-hidden="true"
-                />
+                {active && (
+                  <motion.span
+                    layoutId="services-faq-filter-pill"
+                    transition={{ type: 'spring', stiffness: 360, damping: 30 }}
+                    className="absolute inset-0 rounded-lg bg-[#09090B] shadow-xs"
+                  />
+                )}
+                <span className="relative z-10">{category}</span>
               </button>
             );
           })}
         </div>
 
-        <div
-          role="region"
-          aria-live="polite"
-          className="col-span-6 p-10 bg-[#09090B] text-white flex flex-col justify-between"
+        <Link
+          to="/contact"
+          className="group inline-flex items-center gap-1.5 font-display text-xs sm:text-sm font-semibold text-[#C84B13] hover:text-[#09090B] transition-colors self-start md:self-auto"
         >
-          <div>
-            <div className="flex items-center gap-2 mb-5">
-              <GemMarker size={8} color="#EA580C" />
-              <span className="font-display text-xs font-semibold uppercase tracking-[0.14em] text-amber-400">
-                Answer
-              </span>
-            </div>
-            <h3 className="font-display font-bold text-2xl leading-snug mb-4">
-              {activeItem?.question}
-            </h3>
-            <p className="font-body text-base leading-relaxed text-zinc-300">
-              {activeItem?.answer}
-            </p>
-          </div>
-          <p className="text-xs text-zinc-500 pt-8 border-t border-white/10">
-            Triratna Hi-Tech · Service FAQs
-          </p>
-        </div>
+          <span>Have a specific project question? Ask our Pune team</span>
+          <ArrowRight
+            className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1"
+            aria-hidden="true"
+          />
+        </Link>
       </div>
-    );
-  }
 
-  return (
-    <div className="rounded-2xl overflow-hidden border border-zinc-200 divide-y divide-zinc-200 bg-white card-elevated">
-      {items.map((item, idx) => {
-        const isOpen = item.id === activeId;
-        return (
-          <div key={item.id}>
-            <button
-              type="button"
-              aria-expanded={isOpen}
-              onClick={() => setActiveId(isOpen ? '' : item.id)}
-              className={`w-full text-left px-5 py-4 flex items-center justify-between gap-3 cursor-pointer transition-colors ${
-                isOpen ? 'bg-zinc-50 text-[#09090B]' : 'bg-white text-zinc-800'
+      {/* Accordion Items */}
+      <div className="rounded-2xl overflow-hidden border border-zinc-200 divide-y divide-zinc-200 bg-white card-elevated">
+        {visibleItems.map((item, idx) => {
+          const isOpen = item.id === openId;
+          const buttonId = `service-faq-trigger-${item.id}`;
+          const panelId = `service-faq-panel-${item.id}`;
+
+          return (
+            <div
+              key={item.id}
+              className={`transition-colors duration-200 ${
+                isOpen ? 'bg-[#F8F7F4]/80' : 'bg-white'
               }`}
             >
-              <span className="font-display font-semibold text-sm sm:text-base">
-                <span className="text-xs font-semibold text-[#C84B13] mr-2.5 tabular-nums">
-                  0{idx + 1}
-                </span>
-                {item.question}
-              </span>
-              <ChevronDown
-                className={`w-4 h-4 shrink-0 text-zinc-500 transition-transform ${
-                  isOpen ? 'rotate-180 text-[#C84B13]' : ''
-                }`}
-                aria-hidden="true"
-              />
-            </button>
-            {isOpen && (
-              <div className="px-5 py-4 bg-[#09090B] text-zinc-300 font-body text-sm leading-relaxed">
-                {item.answer}
-              </div>
-            )}
-          </div>
-        );
-      })}
+              <h3>
+                <button
+                  id={buttonId}
+                  type="button"
+                  aria-expanded={isOpen}
+                  aria-controls={panelId}
+                  onClick={() => setOpenId((prev) => toggleAccordionId(prev, item.id))}
+                  className="w-full text-left px-6 py-5 sm:px-8 sm:py-6 flex items-start justify-between gap-4 cursor-pointer hover:bg-zinc-50/80 transition-colors"
+                >
+                  <div className="space-y-1.5 min-w-0">
+                    <div className="flex items-center gap-2 text-xs font-display font-semibold tracking-wide text-zinc-500">
+                      <span
+                        className={`tabular-nums ${
+                          isOpen ? 'text-[#C84B13]' : 'text-zinc-400'
+                        }`}
+                      >
+                        {String(idx + 1).padStart(2, '0')}
+                      </span>
+                      <span aria-hidden="true">·</span>
+                      <span className="text-[#0F4C5C]">{item.category}</span>
+                    </div>
+                    <span className="block font-display font-bold text-base sm:text-xl leading-snug tracking-tight text-[#09090B]">
+                      {item.question}
+                    </span>
+                  </div>
+
+                  <span
+                    aria-hidden="true"
+                    className={`mt-1 w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 transition-colors duration-200 ${
+                      isOpen
+                        ? 'bg-[#09090B] border-[#09090B] text-white'
+                        : 'bg-white border-zinc-200 text-zinc-600'
+                    }`}
+                  >
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform duration-200 ${
+                        isOpen ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </span>
+                </button>
+              </h3>
+
+              <AnimatePresence initial={false}>
+                {isOpen && (
+                  <motion.div
+                    id={panelId}
+                    role="region"
+                    aria-labelledby={buttonId}
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-6 pb-6 sm:px-8 sm:pb-7 pt-0">
+                      <p className="font-body text-sm sm:text-base leading-relaxed text-zinc-600 max-w-3xl">
+                        {item.answer}
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
+

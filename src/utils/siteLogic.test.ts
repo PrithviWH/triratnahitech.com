@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  buildFaqJsonLd,
   buildWhatsAppUrl,
   extractHashTargetId,
   filterByCategory,
@@ -108,5 +109,18 @@ test('extractHashTargetId and resolveScrollBehavior handle hash IDs and motion p
   assert.equal(extractHashTargetId(''), null);
   assert.equal(resolveScrollBehavior(false), 'smooth');
   assert.equal(resolveScrollBehavior(true), 'auto');
+});
+
+test('buildFaqJsonLd generates valid Schema.org FAQPage structured data', () => {
+  const schema = buildFaqJsonLd([
+    {
+      question: 'How do your SEO services improve local rankings for Pune businesses?',
+      answer: 'We optimize technical SEO, on-page structure, and Google Business Profiles.',
+    },
+  ]);
+  assert.equal(schema['@context'], 'https://schema.org');
+  assert.equal(schema['@type'], 'FAQPage');
+  assert.ok(Array.isArray(schema.mainEntity));
+  assert.equal((schema.mainEntity as unknown[]).length, 1);
 });
 

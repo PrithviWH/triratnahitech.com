@@ -1,10 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  buildWhatsAppUrl,
   filterByCategory,
   getNextIndex,
   getPageSeo,
   getPrevIndex,
+  toggleAccordionId,
   validateLeadForm,
   validateNewsletterEmail,
 } from './siteLogic';
@@ -63,3 +65,27 @@ test('getPageSeo returns exact Home title and description', () => {
   assert.match(home.description, /6\+ years of experience/);
   assert.match(getPageSeo('/contact').title, /Let's Talk/);
 });
+
+test('buildWhatsAppUrl formats formatted phone numbers and optional greeting', () => {
+  assert.equal(
+    buildWhatsAppUrl('(+91) 8169598429'),
+    'https://wa.me/918169598429',
+  );
+  assert.equal(
+    buildWhatsAppUrl('+918169598429', '   '),
+    'https://wa.me/918169598429',
+  );
+  assert.equal(
+    buildWhatsAppUrl('(+91) 8169598429', 'Hello Triratna Hi-Tech!'),
+    'https://wa.me/918169598429?text=Hello%20Triratna%20Hi-Tech!',
+  );
+});
+
+test('toggleAccordionId opens closed items, switches active items, and collapses active item on repeat click', () => {
+  assert.equal(toggleAccordionId(null, 'faq-1'), 'faq-1');
+  assert.equal(toggleAccordionId('faq-1', 'faq-2'), 'faq-2');
+  assert.equal(toggleAccordionId('faq-2', 'faq-2'), null);
+  assert.equal(toggleAccordionId('faq-1', ''), null);
+});
+
+

@@ -3,6 +3,7 @@ import {
   type ProjectCategory,
   type ProjectPreviewTheme,
 } from '../utils/projectShowcase';
+import { buildWhatsAppUrl } from '../utils/siteLogic';
 
 export interface NavItem {
   index: string;
@@ -35,6 +36,10 @@ export interface FaqItem {
   id: string;
   question: string;
   answer: string;
+}
+
+export interface HomeFaqItem extends FaqItem {
+  category: 'Web Development' | 'SEO';
 }
 
 export interface TestimonialItem {
@@ -89,7 +94,7 @@ export const SITE_INFO = {
     },
     {
       name: 'WhatsApp',
-      href: 'https://wa.me/+918169598429',
+      href: buildWhatsAppUrl('+918169598429'),
       external: true,
     },
   ],
@@ -236,6 +241,53 @@ export const SERVICE_FAQS: FaqItem[] = [
     question: 'Can you guide my business growth?',
     answer:
       'Yes. With 6+ years of experience, we offer guidance for business setup, brand building, growth, and digital skills.',
+  },
+];
+
+export const HOME_FAQ_CATEGORIES = ['All', 'Web Development', 'SEO'] as const;
+
+export const HOME_FAQS: HomeFaqItem[] = [
+  {
+    id: 'home-faq-1',
+    category: 'Web Development',
+    question: 'What types of websites do you design and develop?',
+    answer:
+      'We build business websites, service showcases, product catalogues, regional-language portals, and custom web solutions—tailored to your brand and structured to turn visitors into enquiries.',
+  },
+  {
+    id: 'home-faq-2',
+    category: 'Web Development',
+    question: 'Are your websites mobile-responsive and built for SEO?',
+    answer:
+      'Yes. Every website we develop adapts cleanly across phones, tablets, and desktops with semantic HTML, fast-loading layouts, and clear heading structure ready for search engines.',
+  },
+  {
+    id: 'home-faq-3',
+    category: 'SEO',
+    question: 'How does your SEO service help Pune businesses get discovered?',
+    answer:
+      'We combine technical site audits, on-page keyword and metadata improvements, structured local details, and Google listing optimization so nearby customers searching for your services find you easily.',
+  },
+  {
+    id: 'home-faq-4',
+    category: 'SEO',
+    question: 'Can you improve SEO on an existing website without a full rebuild?',
+    answer:
+      'Yes. We audit existing websites to improve page speed, mobile usability, meta tags, internal linking, and content clarity, and only suggest a redesign if the current platform limits growth.',
+  },
+  {
+    id: 'home-faq-5',
+    category: 'Web Development',
+    question: 'Do you help with domain registration, hosting, and ongoing updates?',
+    answer:
+      'Yes. We assist with domain setup, dependable web hosting, SSL configuration, and ongoing technical or content support as your business expands.',
+  },
+  {
+    id: 'home-faq-6',
+    category: 'SEO',
+    question: 'How do websites, SEO, and paid ads work together?',
+    answer:
+      'Your website provides a clear, credible destination for prospects, SEO builds steady organic visibility over time, and targeted paid ads capture immediate demand for key services and locations.',
   },
 ];
 

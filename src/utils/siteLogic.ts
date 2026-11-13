@@ -149,3 +149,23 @@ export function getPageSeo(pathname: string): PageSeoMeta {
       'Triratna Hi-Tech helps Pune businesses grow with SEO, digital marketing, paid ads, and website design and development. Backed by 6+ years of experience.',
   };
 }
+
+export function buildWhatsAppUrl(phone: string, message?: string): string {
+  const digits = phone.replace(/\D/g, '');
+  const base = `https://wa.me/${digits}`;
+  const trimmed = message?.trim();
+  if (!trimmed) {
+    return base;
+  }
+  return `${base}?text=${encodeURIComponent(trimmed)}`;
+}
+
+export function toggleAccordionId(
+  currentOpenId: string | null,
+  clickedId: string,
+): string | null {
+  if (!clickedId) return null;
+  return currentOpenId === clickedId ? null : clickedId;
+}
+
+

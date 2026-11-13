@@ -11,6 +11,8 @@ import { HeroBrowserMockup } from '../components/AbstractVisuals';
 import { ServicesBento } from '../components/ServicesBento';
 import { ShatterSegment, ShatterType } from '../components/ShatterType';
 import { ShinyText } from '../components/ShinyText';
+import { HomeFaqAccordion } from '../components/HomeFaqAccordion';
+import { SeoAuditTool } from '../components/SeoAuditTool';
 
 const HERO_SHATTER_SEGMENTS: ShatterSegment[] = [
   {
@@ -325,7 +327,21 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 7. CLOSING CTA */}
+      {/* 7. INSTANT SEO & ACCESSIBILITY AUDIT */}
+      <section className="py-20 sm:py-28 bg-[#FAFAFA] dot-grid-light border-b border-zinc-200/80">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8">
+          <SeoAuditTool sectionNumber="06" />
+        </div>
+      </section>
+
+      {/* 8. FAQ ACCORDION */}
+      <section className="py-20 sm:py-28 bg-white border-b border-zinc-200/80">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8">
+          <HomeFaqAccordion sectionNumber="07" />
+        </div>
+      </section>
+
+      {/* 9. CLOSING CTA */}
       <section className="py-20 sm:py-28 bg-[#FAFAFA]">
         <div className="max-w-7xl mx-auto px-5 sm:px-8">
           <div className="relative rounded-3xl overflow-hidden bg-[#09090B] text-white p-8 sm:p-14 lg:p-16 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center shadow-2xl">
@@ -334,7 +350,7 @@ export default function HomePage() {
               className="absolute top-0 right-0 w-96 h-96 bg-radial from-[#C84B13]/25 via-transparent to-transparent pointer-events-none"
             />
             <div className="relative lg:col-span-8 space-y-4">
-              <SectionLabel number="06" label="Next Step" dark />
+              <SectionLabel number="08" label="Next Step" dark />
               <h2 className="font-display font-bold text-3xl sm:text-5xl lg:text-6xl leading-[1.02] tracking-tight">
                 {HOME_COPY.closingCta.title}
               </h2>

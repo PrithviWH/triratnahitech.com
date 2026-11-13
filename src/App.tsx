@@ -14,6 +14,7 @@ import {
   ToastState,
 } from './components/UiPrimitives';
 import { SeoHead } from './components/SeoHead';
+import { FloatingWhatsAppButton } from './components/FloatingWhatsAppButton';
 
 import HomePage from './pages/HomePage';
 import ServicesPage from './pages/ServicesPage';
@@ -85,6 +86,7 @@ function AppShell() {
       </div>
 
       <Toast toast={toast} onDismiss={() => setToast(null)} />
+      <FloatingWhatsAppButton />
     </div>
   );
 }

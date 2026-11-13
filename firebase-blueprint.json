@@ -1,0 +1,235 @@
+{
+  "entities": {
+    "Enquiry": {
+      "title": "Enquiry",
+      "description": "A prospective client project enquiry submitted via the Contact page.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Full name of the person submitting the enquiry.",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Contact email address.",
+          "minLength": 5,
+          "maxLength": 160,
+          "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$"
+        },
+        "message": {
+          "type": "string",
+          "description": "Project details or message.",
+          "minLength": 10,
+          "maxLength": 2000
+        },
+        "consent": {
+          "type": "boolean",
+          "description": "Explicit user consent to be contacted."
+        },
+        "status": {
+          "type": "string",
+          "description": "Triage status managed by Triratna Hi-Tech admins.",
+          "enum": ["new", "in_review", "contacted", "archived"],
+          "minLength": 3,
+          "maxLength": 20
+        },
+        "sourcePath": {
+          "type": "string",
+          "description": "Application route where the enquiry was submitted.",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the enquiry was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the enquiry was last updated."
+        }
+      },
+      "required": [
+        "name",
+        "email",
+        "message",
+        "consent",
+        "status",
+        "sourcePath",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CareerApplication": {
+      "title": "CareerApplication",
+      "description": "A job or career interest application submitted via the Careers page.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Applicant full name.",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Applicant email address.",
+          "minLength": 5,
+          "maxLength": 160,
+          "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$"
+        },
+        "message": {
+          "type": "string",
+          "description": "Applicant background, skills, or portfolio note.",
+          "minLength": 10,
+          "maxLength": 2000
+        },
+        "consent": {
+          "type": "boolean",
+          "description": "Explicit applicant consent for recruitment follow-up."
+        },
+        "status": {
+          "type": "string",
+          "description": "Recruitment review status managed by admins.",
+          "enum": ["new", "shortlisted", "contacted", "archived"],
+          "minLength": 3,
+          "maxLength": 20
+        },
+        "sourcePath": {
+          "type": "string",
+          "description": "Application route where the application was submitted.",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the application was created."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when the application was last updated."
+        }
+      },
+      "required": [
+        "name",
+        "email",
+        "message",
+        "consent",
+        "status",
+        "sourcePath",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "NewsletterSubscriber": {
+      "title": "NewsletterSubscriber",
+      "description": "A newsletter email subscription submitted from the site footer.",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Subscriber email address.",
+          "minLength": 5,
+          "maxLength": 160,
+          "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$"
+        },
+        "status": {
+          "type": "string",
+          "description": "Subscription state.",
+          "enum": ["subscribed", "unsubscribed"],
+          "minLength": 9,
+          "maxLength": 16
+        },
+        "sourcePath": {
+          "type": "string",
+          "description": "Application route where the user subscribed.",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when subscription was recorded."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when subscription was last updated."
+        }
+      },
+      "required": [
+        "email",
+        "status",
+        "sourcePath",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Authorized Triratna Hi-Tech team administrator document keyed by Firebase Auth UID.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Firebase Auth UID of the administrator.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Verified Google account email address.",
+          "minLength": 5,
+          "maxLength": 160,
+          "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$"
+        },
+        "role": {
+          "type": "string",
+          "description": "Role identifier.",
+          "enum": ["admin"],
+          "minLength": 5,
+          "maxLength": 10
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when admin access was granted."
+        }
+      },
+      "required": [
+        "uid",
+        "email",
+        "role",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/enquiries/{enquiryId}": {
+      "schema": { "$ref": "#/entities/Enquiry" },
+      "description": "Client project enquiries submitted through the public Contact page. Public create-only with strict validation; read, update, and delete restricted to verified admins."
+    },
+    "/career_applications/{applicationId}": {
+      "schema": { "$ref": "#/entities/CareerApplication" },
+      "description": "Candidate applications submitted through the public Careers page. Public create-only with strict validation; read, update, and delete restricted to verified admins."
+    },
+    "/newsletter_subscribers/{subscriberId}": {
+      "schema": { "$ref": "#/entities/NewsletterSubscriber" },
+      "description": "Newsletter email subscriptions submitted from the Footer. Public create-only with strict validation; read, update, and delete restricted to verified admins."
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/AdminUser" },
+      "description": "Trusted admin allowlist records keyed by UID. Only readable by the owning signed-in user or verified admin; writable only by existing verified admins."
+    }
+  }
+}

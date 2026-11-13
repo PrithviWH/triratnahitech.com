@@ -1,0 +1,176 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global safety net: deny all reads and writes unless explicitly matched below.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isEmailVerified() && (
+        request.auth.token.email == 'prithvi.kamble7579@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidEmail(val) {
+      return val is string &&
+        val.size() >= 5 &&
+        val.size() <= 160 &&
+        val.matches('^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$');
+    }
+
+    function isValidEnquiry(data) {
+      return data.keys().hasAll([
+          'name', 'email', 'message', 'consent', 'status', 'sourcePath', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'name', 'email', 'message', 'consent', 'status', 'sourcePath', 'createdAt', 'updatedAt'
+        ]) &&
+        data.name is string && data.name.size() >= 2 && data.name.size() <= 100 &&
+        isValidEmail(data.email) &&
+        data.message is string && data.message.size() >= 10 && data.message.size() <= 2000 &&
+        data.consent is bool &&
+        data.status is string && data.status.size() >= 3 && data.status.size() <= 20 &&
+        data.status in ['new', 'in_review', 'contacted', 'archived'] &&
+        data.sourcePath is string && data.sourcePath.size() >= 1 && data.sourcePath.size() <= 100 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidCareerApplication(data) {
+      return data.keys().hasAll([
+          'name', 'email', 'message', 'consent', 'status', 'sourcePath', 'createdAt', 'updatedAt'
+        ]) &&
+        data.keys().hasOnly([
+          'name', 'email', 'message', 'consent', 'status', 'sourcePath', 'createdAt', 'updatedAt'
+        ]) &&
+        data.name is string && data.name.size() >= 2 && data.name.size() <= 100 &&
+        isValidEmail(data.email) &&
+        data.message is string && data.message.size() >= 10 && data.message.size() <= 2000 &&
+        data.consent is bool &&
+        data.status is string && data.status.size() >= 3 && data.status.size() <= 20 &&
+        data.status in ['new', 'shortlisted', 'contacted', 'archived'] &&
+        data.sourcePath is string && data.sourcePath.size() >= 1 && data.sourcePath.size() <= 100 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidNewsletterSubscriber(data) {
+      return data.keys().hasAll(['email', 'status', 'sourcePath', 'createdAt', 'updatedAt']) &&
+        data.keys().hasOnly(['email', 'status', 'sourcePath', 'createdAt', 'updatedAt']) &&
+        isValidEmail(data.email) &&
+        data.status is string && data.status.size() >= 9 && data.status.size() <= 16 &&
+        data.status in ['subscribed', 'unsubscribed'] &&
+        data.sourcePath is string && data.sourcePath.size() >= 1 && data.sourcePath.size() <= 100 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp;
+    }
+
+    function isValidAdminUser(data) {
+      return data.keys().hasAll(['uid', 'email', 'role', 'createdAt']) &&
+        data.keys().hasOnly(['uid', 'email', 'role', 'createdAt']) &&
+        isValidId(data.uid) &&
+        isValidEmail(data.email) &&
+        data.role is string && data.role.size() >= 5 && data.role.size() <= 10 &&
+        data.role == 'admin' &&
+        data.createdAt is timestamp;
+    }
+
+    match /enquiries/{enquiryId} {
+      allow get: if isEmailVerified() && isValidId(enquiryId) && isAdmin();
+      allow list: if isEmailVerified() && isAdmin();
+      allow create: if isValidId(enquiryId) &&
+        isValidEnquiry(incoming()) &&
+        incoming().consent == true &&
+        incoming().status == 'new' &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isEmailVerified() &&
+        isValidId(enquiryId) &&
+        isValidEnquiry(incoming()) &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']) &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        isAdmin();
+      allow delete: if isEmailVerified() && isValidId(enquiryId) && isAdmin();
+    }
+
+    match /career_applications/{applicationId} {
+      allow get: if isEmailVerified() && isValidId(applicationId) && isAdmin();
+      allow list: if isEmailVerified() && isAdmin();
+      allow create: if isValidId(applicationId) &&
+        isValidCareerApplication(incoming()) &&
+        incoming().consent == true &&
+        incoming().status == 'new' &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isEmailVerified() &&
+        isValidId(applicationId) &&
+        isValidCareerApplication(incoming()) &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']) &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        isAdmin();
+      allow delete: if isEmailVerified() && isValidId(applicationId) && isAdmin();
+    }
+
+    match /newsletter_subscribers/{subscriberId} {
+      allow get: if isEmailVerified() && isValidId(subscriberId) && isAdmin();
+      allow list: if isEmailVerified() && isAdmin();
+      allow create: if isValidId(subscriberId) &&
+        isValidNewsletterSubscriber(incoming()) &&
+        incoming().status == 'subscribed' &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isEmailVerified() &&
+        isValidId(subscriberId) &&
+        isValidNewsletterSubscriber(incoming()) &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']) &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        isAdmin();
+      allow delete: if isEmailVerified() && isValidId(subscriberId) && isAdmin();
+    }
+
+    match /admins/{adminId} {
+      allow get: if isEmailVerified() && isValidId(adminId) && (request.auth.uid == adminId || isAdmin());
+      allow list: if isEmailVerified() && isAdmin();
+      allow create: if isEmailVerified() &&
+        isValidId(adminId) &&
+        isValidAdminUser(incoming()) &&
+        incoming().uid == adminId &&
+        incoming().createdAt == request.time &&
+        isAdmin();
+      allow update: if isEmailVerified() &&
+        isValidId(adminId) &&
+        isValidAdminUser(incoming()) &&
+        incoming().uid == existing().uid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['email', 'role']) &&
+        isAdmin();
+      allow delete: if isEmailVerified() && isValidId(adminId) && request.auth.uid != adminId && isAdmin();
+    }
+  }
+}

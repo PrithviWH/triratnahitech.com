@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Phone, Mail, Clock, MapPin, CheckCircle2 } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import { SITE_INFO } from '../data/siteData';
 import { LeadFormErrors, validateLeadForm } from '../utils/siteLogic';
+import { isFirestoreQuotaError } from '../utils/firestorePayloads';
+import { submitEnquiry } from '../services/firestoreService';
 import { Button, SectionLabel, ToastState } from '../components/UiPrimitives';
 import { ConsentCheckbox, FormField } from '../components/FormField';
 
@@ -10,14 +13,16 @@ export default function ContactPage({
 }: {
   onToast: (toast: ToastState) => void;
 }) {
+  const location = useLocation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [consent, setConsent] = useState(false);
   const [errors, setErrors] = useState<LeadFormErrors>({});
+  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = validateLeadForm({ name, email, message, consent });
     if (!result.isValid) {
@@ -26,15 +31,34 @@ export default function ContactPage({
       return;
     }
     setErrors({});
-    setSubmitted(true);
-    setName('');
-    setEmail('');
-    setMessage('');
-    setConsent(false);
-    onToast({
-      type: 'success',
-      message: 'Message sent! Our Pune team will respond shortly.',
-    });
+    setSubmitting(true);
+    try {
+      await submitEnquiry({
+        name,
+        email,
+        message,
+        consent,
+        sourcePath: location.pathname,
+      });
+      setSubmitted(true);
+      setName('');
+      setEmail('');
+      setMessage('');
+      setConsent(false);
+      onToast({
+        type: 'success',
+        message: 'Message sent! Our Pune team will respond shortly.',
+      });
+    } catch (error) {
+      onToast({
+        type: 'error',
+        message: isFirestoreQuotaError(error)
+          ? 'Daily storage quota reached. Please call or WhatsApp our Pune team directly.'
+          : 'Could not save your enquiry right now. Please try again or message us on WhatsApp.',
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -159,8 +183,8 @@ export default function ContactPage({
                   label={SITE_INFO.consentText}
                   error={errors.consent}
                 />
-                <Button type="submit" variant="primary" magnetic>
-                  <span>Send Message</span>
+                <Button type="submit" variant="primary" magnetic disabled={submitting}>
+                  <span>{submitting ? 'Sending…' : 'Send Message'}</span>
                 </Button>
               </form>
             )}

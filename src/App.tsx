@@ -15,6 +15,7 @@ import {
 } from './components/UiPrimitives';
 import { SeoHead } from './components/SeoHead';
 import { FloatingWhatsAppButton } from './components/FloatingWhatsAppButton';
+import { FirebaseProvider } from './components/FirebaseProvider';
 
 import HomePage from './pages/HomePage';
 import ServicesPage from './pages/ServicesPage';
@@ -26,6 +27,7 @@ import CareersPage from './pages/CareersPage';
 import BlogPage from './pages/BlogPage';
 import BlogPostPage from './pages/BlogPostPage';
 import ContactPage from './pages/ContactPage';
+import AdminPage from './pages/AdminPage';
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -76,6 +78,7 @@ function AppShell() {
                 <Route path="/blog" element={<BlogPage />} />
                 <Route path="/blog/:slug" element={<BlogPostPage />} />
                 <Route path="/contact" element={<ContactPage onToast={setToast} />} />
+                <Route path="/admin" element={<AdminPage onToast={setToast} />} />
                 <Route path="*" element={<HomePage />} />
               </Routes>
             </motion.div>
@@ -94,9 +97,11 @@ function AppShell() {
 export default function App() {
   return (
     <MotionConfig reducedMotion="user">
-      <BrowserRouter>
-        <AppShell />
-      </BrowserRouter>
+      <FirebaseProvider>
+        <BrowserRouter>
+          <AppShell />
+        </BrowserRouter>
+      </FirebaseProvider>
     </MotionConfig>
   );
 }

@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { ArrowDown, CheckCircle2 } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import { OPEN_ROLES, SITE_INFO } from '../data/siteData';
 import { LeadFormErrors, validateLeadForm } from '../utils/siteLogic';
+import { isFirestoreQuotaError } from '../utils/firestorePayloads';
+import { submitCareerApplication } from '../services/firestoreService';
 import {
   Button,
   ChamferCard,
@@ -16,14 +19,16 @@ export default function CareersPage({
 }: {
   onToast: (toast: ToastState) => void;
 }) {
+  const location = useLocation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [consent, setConsent] = useState(false);
   const [errors, setErrors] = useState<LeadFormErrors>({});
+  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = validateLeadForm({ name, email, message, consent });
     if (!result.isValid) {
@@ -32,15 +37,34 @@ export default function CareersPage({
       return;
     }
     setErrors({});
-    setSubmitted(true);
-    setName('');
-    setEmail('');
-    setMessage('');
-    setConsent(false);
-    onToast({
-      type: 'success',
-      message: 'Application details received! Our team will review and reach out.',
-    });
+    setSubmitting(true);
+    try {
+      await submitCareerApplication({
+        name,
+        email,
+        message,
+        consent,
+        sourcePath: location.pathname,
+      });
+      setSubmitted(true);
+      setName('');
+      setEmail('');
+      setMessage('');
+      setConsent(false);
+      onToast({
+        type: 'success',
+        message: 'Application details received! Our team will review and reach out.',
+      });
+    } catch (error) {
+      onToast({
+        type: 'error',
+        message: isFirestoreQuotaError(error)
+          ? 'Daily storage quota reached. Please email your application to triratnahitech@gmail.com.'
+          : 'Could not submit your application right now. Please try again shortly.',
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -195,8 +219,8 @@ export default function CareersPage({
                     label={SITE_INFO.consentText}
                     error={errors.consent}
                   />
-                  <Button type="submit" variant="primary" magnetic>
-                    <span>Submit Application</span>
+                  <Button type="submit" variant="primary" magnetic disabled={submitting}>
+                    <span>{submitting ? 'Submitting…' : 'Submit Application'}</span>
                   </Button>
                 </form>
               )}

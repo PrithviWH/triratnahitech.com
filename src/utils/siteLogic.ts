@@ -143,6 +143,13 @@ export function getPageSeo(pathname: string): PageSeoMeta {
         'Contact Triratna Hi-Tech in Charholi Kh. Pune at (+91) 8169598429 or triratnahitech@gmail.com for websites, SEO, and digital marketing.',
     };
   }
+  if (pathname === '/admin') {
+    return {
+      title: 'Submissions Inbox | Triratna Hi-Tech',
+      description:
+        'Authorized administrator inbox for Triratna Hi-Tech enquiries, career applications, and newsletter subscribers.',
+    };
+  }
   return {
     title: 'Digital Marketing & Web Development in Pune | Triratna Hi-Tech',
     description:

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ArrowRight, ArrowUp, ArrowUpRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import { NAV_ITEMS, SITE_INFO } from '../data/siteData';
 import { validateNewsletterEmail } from '../utils/siteLogic';
+import { isFirestoreQuotaError } from '../utils/firestorePayloads';
+import { subscribeNewsletter } from '../services/firestoreService';
 import { GemLogo } from './GemMotif';
 import { ToastState } from './UiPrimitives';
 
@@ -11,11 +13,13 @@ export function Footer({
 }: {
   onToast: (toast: ToastState) => void;
 }) {
+  const location = useLocation();
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     const validationError = validateNewsletterEmail(email);
     if (validationError) {
@@ -24,12 +28,28 @@ export function Footer({
       return;
     }
     setError(null);
-    setSubscribed(true);
-    setEmail('');
-    onToast({
-      type: 'success',
-      message: 'Subscribed! Thank you for joining the Triratna Hi-Tech newsletter.',
-    });
+    setSubmitting(true);
+    try {
+      await subscribeNewsletter({
+        email,
+        sourcePath: location.pathname,
+      });
+      setSubscribed(true);
+      setEmail('');
+      onToast({
+        type: 'success',
+        message: 'Subscribed! Thank you for joining the Triratna Hi-Tech newsletter.',
+      });
+    } catch (err) {
+      onToast({
+        type: 'error',
+        message: isFirestoreQuotaError(err)
+          ? 'Daily storage quota reached. Please try subscribing again tomorrow.'
+          : 'Could not save subscription right now. Please try again.',
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const scrollToTop = () => {
@@ -157,9 +177,10 @@ export function Footer({
                   </div>
                   <button
                     type="submit"
-                    className="h-12 rounded-xl px-6 bg-[#C84B13] text-white font-display font-semibold text-sm inline-flex items-center justify-center gap-2 whitespace-nowrap shrink-0 cursor-pointer hover:bg-[#EA580C] active:scale-[0.98] transition-all"
+                    disabled={submitting}
+                    className="h-12 rounded-xl px-6 bg-[#C84B13] text-white font-display font-semibold text-sm inline-flex items-center justify-center gap-2 whitespace-nowrap shrink-0 cursor-pointer hover:bg-[#EA580C] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed transition-all"
                   >
-                    <span>Subscribe</span>
+                    <span>{submitting ? 'Saving…' : 'Subscribe'}</span>
                     <ArrowRight className="w-4 h-4" aria-hidden="true" />
                   </button>
                 </div>
@@ -283,6 +304,12 @@ export function Footer({
             <p className="text-zinc-500">
               Pune · Web Development · Digital Marketing · Guidance
             </p>
+            <Link
+              to="/admin"
+              className="font-display font-medium text-xs text-zinc-400 hover:text-white transition-colors"
+            >
+              Admin
+            </Link>
             <button
               type="button"
               onClick={scrollToTop}

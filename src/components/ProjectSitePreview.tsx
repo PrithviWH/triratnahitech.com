@@ -85,14 +85,10 @@ const THEME_ACCENTS: Record<
  * are routed through our preview proxy.
  */
 function resolvePreviewUrl(rawUrl: string, previewTheme?: string, forceProxy?: boolean): string {
-  if (forceProxy) {
-    return `/api/site-preview-proxy?url=${encodeURIComponent(rawUrl)}`;
-  }
-
   try {
     const parsed = new URL(rawUrl);
-    if (parsed.hostname === 'music.brambedkar.in' || previewTheme === 'music') {
-      return `/api/site-preview-proxy?url=${encodeURIComponent(rawUrl)}`;
+    if (forceProxy || parsed.hostname === 'music.brambedkar.in' || previewTheme === 'music') {
+      return `/api/preview-frame/${parsed.hostname}/`;
     }
     return rawUrl;
   } catch {
@@ -196,7 +192,7 @@ export default function ProjectSitePreview({
   };
 
   const handleError = () => {
-    if (!useProxy && !previewSrc.includes('/api/site-preview-proxy')) {
+    if (!useProxy && !previewSrc.includes('/api/preview-frame/') && !previewSrc.includes('/api/site-preview-proxy')) {
       setUseProxy(true);
     } else {
       setHasError(true);

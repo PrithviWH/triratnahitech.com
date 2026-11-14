@@ -79,12 +79,15 @@ async function startServer() {
     res.json({ status: 'ok' });
   });
 
-  app.get('/api/site-preview-proxy', async (req, res) => {
-    const rawUrl = typeof req.query.url === 'string' ? req.query.url : '';
-    const validation = validateAndNormalizeAuditUrl(rawUrl);
+  app.get('/api/preview-frame/*', async (req, res) => {
+    const rawPath = (req.url || '').replace(/^\/api\/preview-frame\//, '').split('?')[0];
+    const slashIdx = rawPath.indexOf('/');
+    const host = slashIdx === -1 ? rawPath : rawPath.slice(0, slashIdx);
+    const subPath = slashIdx === -1 ? '' : rawPath.slice(slashIdx + 1);
 
+    const validation = validateAndNormalizeAuditUrl(`https://${host}/${subPath}`);
     if (!validation.ok) {
-      res.status(400).send('Invalid preview URL');
+      res.status(400).send('Invalid preview host');
       return;
     }
 
@@ -112,7 +115,7 @@ async function startServer() {
 
       if (isHtml) {
         const rawHtml = await response.text();
-        const html = transformProxyHtml(rawHtml, finalUrl);
+        const html = transformProxyHtml(rawHtml, finalUrl, `/api/preview-frame/${host}/`);
 
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
         res.removeHeader('X-Frame-Options');
@@ -128,6 +131,18 @@ async function startServer() {
     } catch {
       res.status(502).send('Error loading preview');
     }
+  });
+
+  app.get('/api/site-preview-proxy', async (req, res) => {
+    const rawUrl = typeof req.query.url === 'string' ? req.query.url : '';
+    const validation = validateAndNormalizeAuditUrl(rawUrl);
+
+    if (!validation.ok) {
+      res.status(400).send('Invalid preview URL');
+      return;
+    }
+
+    res.redirect(`/api/preview-frame/${validation.hostname}/`);
   });
 
   app.post('/api/seo-audit', async (req, res) => {

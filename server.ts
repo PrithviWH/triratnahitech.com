@@ -94,7 +94,7 @@ async function startServer() {
         headers: {
           'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 TriratnaPreview/1.0',
-          Accept: 'text/html,application/xhtml+xml',
+          Accept: (typeof req.headers.accept === 'string' && req.headers.accept) || '*/*',
         },
       });
 
@@ -103,20 +103,28 @@ async function startServer() {
         return;
       }
 
-      const contentType = response.headers.get('content-type') || '';
-      if (!contentType.toLowerCase().includes('text/html') && !contentType.toLowerCase().includes('xhtml')) {
-        res.status(415).send('Non-HTML response');
-        return;
+      const contentType = response.headers.get('content-type') || 'application/octet-stream';
+      const isHtml =
+        contentType.toLowerCase().includes('text/html') ||
+        contentType.toLowerCase().includes('xhtml');
+
+      res.setHeader('Access-Control-Allow-Origin', '*');
+
+      if (isHtml) {
+        const rawHtml = await response.text();
+        const html = transformProxyHtml(rawHtml, finalUrl);
+
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.removeHeader('X-Frame-Options');
+        res.setHeader('Content-Security-Policy', "frame-ancestors 'self'");
+        res.setHeader('Cache-Control', 'public, max-age=600');
+        res.send(html);
+      } else {
+        const buffer = Buffer.from(await response.arrayBuffer());
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        res.send(buffer);
       }
-
-      const rawHtml = await response.text();
-      const html = transformProxyHtml(rawHtml, finalUrl);
-
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.removeHeader('X-Frame-Options');
-      res.setHeader('Content-Security-Policy', "frame-ancestors 'self'");
-      res.setHeader('Cache-Control', 'public, max-age=600');
-      res.send(html);
     } catch {
       res.status(502).send('Error loading preview');
     }

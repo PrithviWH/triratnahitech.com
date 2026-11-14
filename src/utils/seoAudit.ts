@@ -152,18 +152,57 @@ export async function safeFetchWithSsrfProtection(
   throw new Error('Too many redirects');
 }
 
-export function transformProxyHtml(html: string, finalUrl: string): string {
+export function transformProxyHtml(
+  html: string,
+  finalUrl: string,
+  proxyEndpoint = '/api/site-preview-proxy'
+): string {
   const targetBase = new URL(finalUrl);
   const baseHref = `${targetBase.origin}${targetBase.pathname.endsWith('/') ? targetBase.pathname : targetBase.pathname + '/'}`;
-  const baseTag = `<base href="${baseHref}" />`;
 
   let processed = html;
+
+  // 1. Rewrite stylesheet links to route via proxy and strip crossorigin to eliminate CORS blocks
+  processed = processed.replace(
+    /(<link\b[^>]*\brel=["']?stylesheet["']?[^>]*\bhref=["'])([^"']+)(["'][^>]*>)/gi,
+    (_match, prefix, href, suffix) => {
+      try {
+        const absoluteUrl = new URL(href, baseHref).toString();
+        const proxiedHref = `${proxyEndpoint}?url=${encodeURIComponent(absoluteUrl)}`;
+        const cleanPrefix = prefix.replace(/\s+crossorigin(=["'][^"']*["'])?/gi, '');
+        const cleanSuffix = suffix.replace(/\s+crossorigin(=["'][^"']*["'])?/gi, '');
+        return `${cleanPrefix}${proxiedHref}${cleanSuffix}`;
+      } catch {
+        return _match;
+      }
+    }
+  );
+
+  // 2. Rewrite script tags to route via proxy and strip crossorigin to eliminate CORS blocks
+  processed = processed.replace(
+    /(<script\b[^>]*\bsrc=["'])([^"']+)(["'][^>]*>)/gi,
+    (_match, prefix, src, suffix) => {
+      try {
+        const absoluteUrl = new URL(src, baseHref).toString();
+        const proxiedSrc = `${proxyEndpoint}?url=${encodeURIComponent(absoluteUrl)}`;
+        const cleanPrefix = prefix.replace(/\s+crossorigin(=["'][^"']*["'])?/gi, '');
+        const cleanSuffix = suffix.replace(/\s+crossorigin(=["'][^"']*["'])?/gi, '');
+        return `${cleanPrefix}${proxiedSrc}${cleanSuffix}`;
+      } catch {
+        return _match;
+      }
+    }
+  );
+
+  // 3. Inject base href for images, fonts, and relative links
+  const baseTag = `<base href="${baseHref}" />`;
   if (/<head[^>]*>/i.test(processed)) {
     processed = processed.replace(/(<head[^>]*>)/i, `$1\n  ${baseTag}`);
   } else {
     processed = `${baseTag}\n${processed}`;
   }
 
+  // 4. Strip meta frame-busters
   processed = processed.replace(/<meta[^>]*http-equiv=["']?X-Frame-Options["']?[^>]*>/gi, '');
   return processed;
 }

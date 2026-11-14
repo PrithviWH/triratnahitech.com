@@ -93,11 +93,14 @@ test('getScoreGrade maps score thresholds cleanly', () => {
   assert.equal(getScoreGrade(40), 'Critical');
 });
 
-test('transformProxyHtml injects base tag and strips X-Frame-Options meta tags', () => {
-  const sample = `<html><head><meta http-equiv="X-Frame-Options" content="DENY"><title>Music</title></head><body><h1>Bhim Geet</h1></body></html>`;
+test('transformProxyHtml injects base tag, proxies stylesheets/scripts, and strips X-Frame-Options', () => {
+  const sample = `<html><head><meta http-equiv="X-Frame-Options" content="DENY"><link rel="stylesheet" crossorigin href="/assets/css/index.css"><script type="module" crossorigin src="/assets/js/index.js"></script><title>Music</title></head><body><h1>Bhim Geet</h1></body></html>`;
   const result = transformProxyHtml(sample, 'https://music.brambedkar.in/');
   assert.match(result, /<base href="https:\/\/music\.brambedkar\.in\/" \/>/);
   assert.equal(result.includes('http-equiv="X-Frame-Options"'), false);
+  assert.match(result, /href="\/api\/site-preview-proxy\?url=https%3A%2F%2Fmusic\.brambedkar\.in%2Fassets%2Fcss%2Findex\.css"/);
+  assert.match(result, /src="\/api\/site-preview-proxy\?url=https%3A%2F%2Fmusic\.brambedkar\.in%2Fassets%2Fjs%2Findex\.js"/);
+  assert.equal(result.includes('crossorigin'), false);
 });
 
 test('safeFetchWithSsrfProtection rejects private, local, and metadata IP targets immediately', async () => {

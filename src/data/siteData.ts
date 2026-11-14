@@ -17,6 +17,12 @@ export interface ClientItem {
   monogram: string;
   category: 'Real Estate' | 'Construction' | 'News' | 'Food' | 'Other';
   focus: string;
+  summary: string;
+  deliverables: [string, string];
+  domain?: string;
+  url?: string;
+  projectId?: string;
+  relatedProjectIds?: string[];
 }
 
 export interface ProjectItem {
@@ -333,28 +339,93 @@ export const HOME_FAQS: HomeFaqItem[] = [
   },
 ];
 
-// TODO: Swap monogram tiles with real client logo SVG/image assets when provided
 export const CLIENTS_DATA: ClientItem[] = [
-  {
-    id: 'care32',
-    name: 'Care32',
-    monogram: 'C32',
-    category: 'Other',
-    focus: 'Healthcare & Dental Digital Presence',
-  },
   {
     id: 'kimaya-masale',
     name: 'Kimaya Masale',
     monogram: 'KM',
     category: 'Food',
-    focus: 'Food & Spice Brand Promotion',
+    focus: 'Food & Spice Brand Storefront',
+    summary:
+      'Spice brand showcase crafted for Kimaya Food Products highlighting authentic blends, retail packs, and wholesale distributor inquiries.',
+    deliverables: ['Product Showcase UI', 'Distributor Inquiry Flow'],
+    domain: 'kimayafoodproducts.com',
+    url: normalizeWebsiteUrl('kimayafoodproducts.com'),
+    projectId: 'kimaya-food-products',
   },
   {
     id: 'saksham-real-estate',
     name: 'Saksham Real Estate',
     monogram: 'SR',
     category: 'Real Estate',
-    focus: 'Property Visibility & Lead Support',
+    focus: 'Property Showcase & Lead Flow',
+    summary:
+      'Residential and commercial property platform in Pune built for clear project discovery, buyer trust, and direct site-visit inquiries.',
+    deliverables: ['Property Listing Cards', 'Lead Capture Flow'],
+    domain: 'sakshamrealestate.in',
+    url: normalizeWebsiteUrl('sakshamrealestate.in'),
+    projectId: 'saksham-real-estate',
+  },
+  {
+    id: 'care32',
+    name: 'Care32 Dental Clinic',
+    monogram: 'C32',
+    category: 'Other',
+    focus: 'Healthcare Presence & Booking',
+    summary:
+      'Reassuring dental clinic platform spotlighting family and cosmetic treatments, hygiene standards, and easy patient appointment booking.',
+    deliverables: ['Treatment Directory', 'Patient Appointment Desk'],
+    domain: 'care32-dentist.com',
+    url: normalizeWebsiteUrl('care32-dentist.com'),
+    projectId: 'care32-dentist',
+  },
+  {
+    id: 'askk-international',
+    name: 'ASKK International',
+    monogram: 'ASK',
+    category: 'Other',
+    focus: 'Corporate & Global Trade Site',
+    summary:
+      'International trade and export presence showcasing global supply capabilities, sourcing standards, and B2B partner outreach.',
+    deliverables: ['Corporate Brand System', 'Partner Inquiry Portal'],
+    domain: 'askkinternational.com',
+    url: normalizeWebsiteUrl('askkinternational.com'),
+    projectId: 'askk-international',
+  },
+  {
+    id: 'br-ambedkar',
+    name: 'BR Ambedkar Digital Portals',
+    monogram: 'BRA',
+    category: 'Other',
+    focus: 'Multi-Portal Cultural & Constitutional Ecosystem',
+    summary:
+      'A 7-portal digital ecosystem spanning the Constitution of India archive, Marathi & Hindi Devanagari editions, audio tributes, quotes, and historical timelines.',
+    deliverables: ['7 Specialized Web Portals', 'Devanagari & Archive UI'],
+    domain: 'constitution.brambedkar.in',
+    url: normalizeWebsiteUrl('constitution.brambedkar.in'),
+    projectId: 'constitution-brambedkar',
+    relatedProjectIds: [
+      'constitution-brambedkar',
+      'marathi-brambedkar',
+      'hindi-brambedkar',
+      'music-brambedkar',
+      'quotes-brambedkar',
+      'walls-brambedkar',
+      'history-brambedkar',
+    ],
+  },
+  {
+    id: 'samvidhan-live24-news',
+    name: 'Samvidhan Live24 News',
+    monogram: 'SL24',
+    category: 'News',
+    focus: 'Editorial News Media & Channel Support',
+    summary:
+      'Fast-loading digital news publication and broadcast channel support built for daily regional reporting and high mobile readability.',
+    deliverables: ['Broadsheet Edition Grid', 'Fast Article Pages'],
+    domain: 'news.brambedkar.in',
+    url: normalizeWebsiteUrl('news.brambedkar.in'),
+    projectId: 'news-brambedkar',
   },
   {
     id: 'affan-real-estate',
@@ -362,6 +433,9 @@ export const CLIENTS_DATA: ClientItem[] = [
     monogram: 'AR',
     category: 'Real Estate',
     focus: 'Real Estate Web & Local Reach',
+    summary:
+      'Local search positioning, property promotion, and digital lead generation tailored for residential and commercial buyers in Pune.',
+    deliverables: ['Local SEO Visibility', 'Buyer Lead Campaigns'],
   },
   {
     id: 'krupankit-developers',
@@ -369,6 +443,9 @@ export const CLIENTS_DATA: ClientItem[] = [
     monogram: 'KD',
     category: 'Construction',
     focus: 'Developer Showcase & Campaigns',
+    summary:
+      'Project launch presentations, brand credibility assets, and targeted digital campaigns built for property developments.',
+    deliverables: ['Developer Brand Showcase', 'Launch Ad Campaigns'],
   },
   {
     id: 'aadhunik-step-construction',
@@ -376,20 +453,9 @@ export const CLIENTS_DATA: ClientItem[] = [
     monogram: 'ASC',
     category: 'Construction',
     focus: 'Construction Brand Online Home',
-  },
-  {
-    id: 'samvidhan-live24-news',
-    name: 'Samvidhan Live24 News',
-    monogram: 'SL24',
-    category: 'News',
-    focus: 'News Media & Channel Support',
-  },
-  {
-    id: 'br-ambedkar',
-    name: 'BR Ambedkar',
-    monogram: 'BRA',
-    category: 'Other',
-    focus: 'Community Web Portal (brambedkar.in)',
+    summary:
+      'Structured digital presence highlighting civil engineering expertise, turnkey construction milestones, and client consultation paths.',
+    deliverables: ['Service Capability Architecture', 'Consultation Funnel'],
   },
 ];
 

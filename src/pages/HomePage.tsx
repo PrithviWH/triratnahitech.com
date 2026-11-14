@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
-import { CLIENTS_DATA, HOME_COPY } from '../data/siteData';
+import { HOME_COPY } from '../data/siteData';
 import {
   Button,
   MarqueeStrip,
@@ -14,6 +14,7 @@ import { ShinyText } from '../components/ShinyText';
 import { HomeFaqAccordion } from '../components/HomeFaqAccordion';
 import { SeoAuditTool } from '../components/SeoAuditTool';
 import { RegionalSummaryStrip } from '../components/RegionalSummaryStrip';
+import { ClientsProjectsShowcase } from '../components/ClientsProjectsShowcase';
 
 const HERO_SHATTER_SEGMENTS: ShatterSegment[] = [
   {
@@ -34,9 +35,6 @@ const HERO_SHATTER_SEGMENTS: ShatterSegment[] = [
 ];
 
 export default function HomePage() {
-  const rowOneClients = CLIENTS_DATA.slice(0, 4);
-  const rowTwoClients = CLIENTS_DATA.slice(4, 8);
-
   return (
     <div>
       {/* 1. HERO */}
@@ -234,73 +232,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. OUR CLIENTS (2-Row Infinite Marquee with Edge Fade) */}
-      <section className="py-20 sm:py-28 bg-[#FAFAFA] border-b border-zinc-200/80 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 mb-12">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
-            <div className="lg:col-span-7">
-              <SectionLabel number="04" label="Collaborations" />
-              <h2 className="font-display font-bold text-3xl sm:text-5xl tracking-tight text-[#09090B]">
-                {HOME_COPY.clientsSection.title}
-              </h2>
-              <p className="font-body text-base sm:text-lg text-zinc-600 mt-3 max-w-xl">
-                {HOME_COPY.clientsSection.text}
-              </p>
-            </div>
-            <div className="lg:col-span-5 lg:text-right">
-              <Button to="/clients" variant="ghost">
-                <span>View All Clients</span>
-                <ArrowRight className="w-4 h-4" aria-hidden="true" />
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* TODO: Swap client monogram tiles below with real client logo SVG/image assets when provided */}
-        <div className="marquee-group marquee-mask space-y-4">
-          <div className="flex w-max animate-marquee-left gap-4">
-            {[...rowOneClients, ...rowOneClients, ...rowOneClients].map((client, idx) => (
-              <div
-                key={`${client.id}-r1-${idx}`}
-                className="w-64 sm:w-72 shrink-0 rounded-2xl border border-zinc-200 bg-white p-5 flex items-center gap-4 card-elevated"
-              >
-                <div className="w-11 h-11 shrink-0 rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-center font-display font-bold text-sm text-[#C84B13]">
-                  {client.monogram}
-                </div>
-                <div className="min-w-0">
-                  <p className="font-display font-semibold text-base text-[#09090B] truncate">
-                    {client.name}
-                  </p>
-                  <p className="text-xs font-medium text-zinc-500 truncate">
-                    {client.category}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex w-max animate-marquee-right gap-4">
-            {[...rowTwoClients, ...rowTwoClients, ...rowTwoClients].map((client, idx) => (
-              <div
-                key={`${client.id}-r2-${idx}`}
-                className="w-64 sm:w-72 shrink-0 rounded-2xl border border-zinc-200 bg-white p-5 flex items-center gap-4 card-elevated"
-              >
-                <div className="w-11 h-11 shrink-0 rounded-xl bg-[#0F4C5C] flex items-center justify-center font-display font-bold text-sm text-white">
-                  {client.monogram}
-                </div>
-                <div className="min-w-0">
-                  <p className="font-display font-semibold text-base text-[#09090B] truncate">
-                    {client.name}
-                  </p>
-                  <p className="text-xs font-medium text-zinc-500 truncate">
-                    {client.category}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* 5. OUR CLIENTS & LIVE PROJECTS SHOWCASE */}
+      <ClientsProjectsShowcase sectionNumber="04" />
 
       {/* 6. PROCESS STRIP (Plan / Build / Grow) */}
       <section className="py-20 sm:py-24 bg-white border-b border-zinc-200/80">

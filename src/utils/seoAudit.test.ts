@@ -4,6 +4,8 @@ import {
   analyzeHtmlForAudit,
   extractPageSpeedAuditResult,
   getScoreGrade,
+  safeFetchWithSsrfProtection,
+  transformProxyHtml,
   validateAndNormalizeAuditUrl,
 } from './seoAudit';
 
@@ -89,4 +91,28 @@ test('getScoreGrade maps score thresholds cleanly', () => {
   assert.equal(getScoreGrade(85), 'Strong');
   assert.equal(getScoreGrade(72), 'Needs Attention');
   assert.equal(getScoreGrade(40), 'Critical');
+});
+
+test('transformProxyHtml injects base tag and strips X-Frame-Options meta tags', () => {
+  const sample = `<html><head><meta http-equiv="X-Frame-Options" content="DENY"><title>Music</title></head><body><h1>Bhim Geet</h1></body></html>`;
+  const result = transformProxyHtml(sample, 'https://music.brambedkar.in/');
+  assert.match(result, /<base href="https:\/\/music\.brambedkar\.in\/" \/>/);
+  assert.equal(result.includes('http-equiv="X-Frame-Options"'), false);
+});
+
+test('safeFetchWithSsrfProtection rejects private, local, and metadata IP targets immediately', async () => {
+  await assert.rejects(
+    () => safeFetchWithSsrfProtection('http://169.254.169.254/latest/meta-data/'),
+    /SSRF blocked/,
+  );
+
+  await assert.rejects(
+    () => safeFetchWithSsrfProtection('http://127.0.0.1:8080/'),
+    /SSRF blocked/,
+  );
+
+  await assert.rejects(
+    () => safeFetchWithSsrfProtection('http://localhost:3000/'),
+    /SSRF blocked/,
+  );
 });

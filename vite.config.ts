@@ -2,6 +2,10 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig, type Plugin } from 'vite';
+import {
+  safeFetchWithSsrfProtection,
+  transformProxyHtml,
+} from './src/utils/seoAudit.ts';
 
 function previewProxyPlugin(): Plugin {
   return {
@@ -17,13 +21,13 @@ function previewProxyPlugin(): Plugin {
             return;
           }
 
-          const response = await fetch(targetUrl, {
+          const { response, finalUrl } = await safeFetchWithSsrfProtection(targetUrl, {
+            timeoutMs: 8000,
             headers: {
               'User-Agent':
                 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 TriratnaPreview/1.0',
               Accept: 'text/html,application/xhtml+xml',
             },
-            signal: AbortSignal.timeout(8000),
           });
 
           if (!response.ok) {
@@ -32,18 +36,15 @@ function previewProxyPlugin(): Plugin {
             return;
           }
 
-          let html = await response.text();
-          const targetBase = new URL(response.url || targetUrl);
-          const baseHref = `${targetBase.origin}${targetBase.pathname.endsWith('/') ? targetBase.pathname : targetBase.pathname + '/'}`;
-          const baseTag = `<base href="${baseHref}" />`;
-
-          if (/<head[^>]*>/i.test(html)) {
-            html = html.replace(/(<head[^>]*>)/i, `$1\n  ${baseTag}`);
-          } else {
-            html = `${baseTag}\n${html}`;
+          const contentType = response.headers.get('content-type') || '';
+          if (!contentType.toLowerCase().includes('text/html') && !contentType.toLowerCase().includes('xhtml')) {
+            res.statusCode = 415;
+            res.end('Non-HTML response');
+            return;
           }
 
-          html = html.replace(/<meta[^>]*http-equiv=["']?X-Frame-Options["']?[^>]*>/gi, '');
+          const rawHtml = await response.text();
+          const html = transformProxyHtml(rawHtml, finalUrl);
 
           res.setHeader('Content-Type', 'text/html; charset=utf-8');
           res.setHeader('Cache-Control', 'public, max-age=600');

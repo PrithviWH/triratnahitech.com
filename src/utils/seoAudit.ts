@@ -96,6 +96,78 @@ export function getScoreGrade(score: number): AuditGrade {
   return 'Critical';
 }
 
+export interface SafeFetchResult {
+  response: Response;
+  finalUrl: string;
+}
+
+export async function safeFetchWithSsrfProtection(
+  initialUrl: string,
+  options: {
+    maxRedirects?: number;
+    timeoutMs?: number;
+    headers?: Record<string, string>;
+  } = {}
+): Promise<SafeFetchResult> {
+  const maxRedirects = options.maxRedirects ?? 3;
+  const timeoutMs = options.timeoutMs ?? 8000;
+  let currentUrl = initialUrl;
+  let hops = 0;
+
+  while (hops <= maxRedirects) {
+    const validation = validateAndNormalizeAuditUrl(currentUrl);
+    if (!validation.ok) {
+      throw new Error(`SSRF blocked: ${validation.error}`);
+    }
+
+    const response = await fetch(validation.url, {
+      method: 'GET',
+      redirect: 'manual',
+      signal: AbortSignal.timeout(timeoutMs),
+      headers: options.headers ?? {
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 TriratnaHiTech/1.0',
+        Accept: 'text/html,application/xhtml+xml',
+      },
+    });
+
+    if ([301, 302, 303, 307, 308].includes(response.status)) {
+      const location = response.headers.get('location');
+      if (!location) {
+        return { response, finalUrl: currentUrl };
+      }
+      try {
+        const resolved = new URL(location, currentUrl);
+        currentUrl = resolved.toString();
+        hops++;
+        continue;
+      } catch {
+        throw new Error('Invalid redirect target URL');
+      }
+    }
+
+    return { response, finalUrl: currentUrl };
+  }
+
+  throw new Error('Too many redirects');
+}
+
+export function transformProxyHtml(html: string, finalUrl: string): string {
+  const targetBase = new URL(finalUrl);
+  const baseHref = `${targetBase.origin}${targetBase.pathname.endsWith('/') ? targetBase.pathname : targetBase.pathname + '/'}`;
+  const baseTag = `<base href="${baseHref}" />`;
+
+  let processed = html;
+  if (/<head[^>]*>/i.test(processed)) {
+    processed = processed.replace(/(<head[^>]*>)/i, `$1\n  ${baseTag}`);
+  } else {
+    processed = `${baseTag}\n${processed}`;
+  }
+
+  processed = processed.replace(/<meta[^>]*http-equiv=["']?X-Frame-Options["']?[^>]*>/gi, '');
+  return processed;
+}
+
 interface LighthouseAuditNode {
   id?: string;
   title?: string;

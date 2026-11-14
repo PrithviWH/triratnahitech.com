@@ -5,14 +5,14 @@ import { fileURLToPath } from 'url';
 import {
   analyzeHtmlForAudit,
   extractPageSpeedAuditResult,
-  isPrivateOrLocalHost,
+  safeFetchWithSsrfProtection,
+  transformProxyHtml,
   validateAndNormalizeAuditUrl,
 } from './src/utils/seoAudit.ts';
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const currentDir = import.meta.dirname ?? path.dirname(fileURLToPath(import.meta.url));
 
 const PORT = Number(process.env.PORT) || 3000;
 const PAGESPEED_ENDPOINT = 'https://www.googleapis.com/pagespeedonline/v5/runPagespeed';
@@ -45,38 +45,30 @@ async function runPageSpeedAudit(targetUrl: string) {
 }
 
 async function runLiveHtmlAudit(targetUrl: string) {
-  const response = await fetch(targetUrl, {
-    method: 'GET',
-    redirect: 'follow',
-    signal: AbortSignal.timeout(9000),
-    headers: {
-      'User-Agent': 'TriratnaHiTechAudit/1.0 (+https://triratnahitech.in)',
-      Accept: 'text/html,application/xhtml+xml',
-    },
-  });
-
-  const finalUrl = response.url || targetUrl;
   try {
-    const finalParsed = new URL(finalUrl);
-    if (isPrivateOrLocalHost(finalParsed.hostname)) {
+    const { response, finalUrl } = await safeFetchWithSsrfProtection(targetUrl, {
+      timeoutMs: 9000,
+      headers: {
+        'User-Agent': 'TriratnaHiTechAudit/1.0 (+https://triratnahitech.com)',
+        Accept: 'text/html,application/xhtml+xml',
+      },
+    });
+
+    if (!response.ok) {
       return null;
     }
+
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.toLowerCase().includes('text/html') && !contentType.toLowerCase().includes('xhtml')) {
+      return null;
+    }
+
+    const rawText = await response.text();
+    const cappedHtml = rawText.slice(0, 600_000);
+    return analyzeHtmlForAudit(cappedHtml, finalUrl);
   } catch {
     return null;
   }
-
-  if (!response.ok) {
-    return null;
-  }
-
-  const contentType = response.headers.get('content-type') || '';
-  if (contentType && !contentType.toLowerCase().includes('text/html') && !contentType.toLowerCase().includes('xhtml')) {
-    return null;
-  }
-
-  const rawText = await response.text();
-  const cappedHtml = rawText.slice(0, 600_000);
-  return analyzeHtmlForAudit(cappedHtml, finalUrl);
 }
 
 async function startServer() {
@@ -97,10 +89,8 @@ async function startServer() {
     }
 
     try {
-      const response = await fetch(validation.url, {
-        method: 'GET',
-        redirect: 'follow',
-        signal: AbortSignal.timeout(8000),
+      const { response, finalUrl } = await safeFetchWithSsrfProtection(validation.url, {
+        timeoutMs: 8000,
         headers: {
           'User-Agent':
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 TriratnaPreview/1.0',
@@ -119,18 +109,8 @@ async function startServer() {
         return;
       }
 
-      let html = await response.text();
-      const targetBase = new URL(response.url || validation.url);
-      const baseHref = `${targetBase.origin}${targetBase.pathname.endsWith('/') ? targetBase.pathname : targetBase.pathname + '/'}`;
-      const baseTag = `<base href="${baseHref}" />`;
-
-      if (/<head[^>]*>/i.test(html)) {
-        html = html.replace(/(<head[^>]*>)/i, `$1\n  ${baseTag}`);
-      } else {
-        html = `${baseTag}\n${html}`;
-      }
-
-      html = html.replace(/<meta[^>]*http-equiv=["']?X-Frame-Options["']?[^>]*>/gi, '');
+      const rawHtml = await response.text();
+      const html = transformProxyHtml(rawHtml, finalUrl);
 
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.removeHeader('X-Frame-Options');
@@ -186,7 +166,7 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    const distDir = path.resolve(__dirname, 'dist');
+    const distDir = path.resolve(currentDir, 'dist');
     app.use(express.static(distDir));
     app.get('*', (_req, res) => {
       res.sendFile(path.join(distDir, 'index.html'));

@@ -123,9 +123,10 @@ export default function AdminPage({
       await updateSubmissionStatus(
         collectionName,
         id,
-        nextStatus as EnquiryRecord['status'] &
-          CareerApplicationRecord['status'] &
-          NewsletterSubscriberRecord['status'],
+        nextStatus as
+          | EnquiryRecord['status']
+          | CareerApplicationRecord['status']
+          | NewsletterSubscriberRecord['status'],
       );
       onToast({ type: 'success', message: 'Status updated.' });
     } catch (error) {

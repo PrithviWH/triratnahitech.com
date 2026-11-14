@@ -19,16 +19,18 @@ import { FirebaseProvider } from './components/FirebaseProvider';
 import { extractHashTargetId, resolveScrollBehavior } from './utils/siteLogic';
 
 import HomePage from './pages/HomePage';
-import ServicesPage from './pages/ServicesPage';
-import AboutPage from './pages/AboutPage';
-import ClientsPage from './pages/ClientsPage';
-import ProjectsPage from './pages/ProjectsPage';
-import TestimonialsPage from './pages/TestimonialsPage';
-import CareersPage from './pages/CareersPage';
-import BlogPage from './pages/BlogPage';
-import BlogPostPage from './pages/BlogPostPage';
-import ContactPage from './pages/ContactPage';
-import AdminPage from './pages/AdminPage';
+
+const ServicesPage = React.lazy(() => import('./pages/ServicesPage'));
+const AboutPage = React.lazy(() => import('./pages/AboutPage'));
+const ClientsPage = React.lazy(() => import('./pages/ClientsPage'));
+const ProjectsPage = React.lazy(() => import('./pages/ProjectsPage'));
+const TestimonialsPage = React.lazy(() => import('./pages/TestimonialsPage'));
+const CareersPage = React.lazy(() => import('./pages/CareersPage'));
+const BlogPage = React.lazy(() => import('./pages/BlogPage'));
+const BlogPostPage = React.lazy(() => import('./pages/BlogPostPage'));
+const ContactPage = React.lazy(() => import('./pages/ContactPage'));
+const AdminPage = React.lazy(() => import('./pages/AdminPage'));
+const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
@@ -112,20 +114,31 @@ function AppShell() {
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             >
-              <Routes location={location}>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/services" element={<ServicesPage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/clients" element={<ClientsPage />} />
-                <Route path="/projects" element={<ProjectsPage />} />
-                <Route path="/testimonials" element={<TestimonialsPage />} />
-                <Route path="/careers" element={<CareersPage onToast={setToast} />} />
-                <Route path="/blog" element={<BlogPage />} />
-                <Route path="/blog/:slug" element={<BlogPostPage />} />
-                <Route path="/contact" element={<ContactPage onToast={setToast} />} />
-                <Route path="/admin" element={<AdminPage onToast={setToast} />} />
-                <Route path="*" element={<HomePage />} />
-              </Routes>
+              <React.Suspense
+                fallback={
+                  <div className="min-h-[50vh] flex items-center justify-center py-20" aria-live="polite">
+                    <div className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-white border border-zinc-200/80 shadow-xs text-xs font-medium text-zinc-600">
+                      <span className="w-2 h-2 rounded-full bg-[#C84B13] animate-ping" />
+                      <span>Loading...</span>
+                    </div>
+                  </div>
+                }
+              >
+                <Routes location={location}>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/services" element={<ServicesPage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/clients" element={<ClientsPage />} />
+                  <Route path="/projects" element={<ProjectsPage />} />
+                  <Route path="/testimonials" element={<TestimonialsPage />} />
+                  <Route path="/careers" element={<CareersPage onToast={setToast} />} />
+                  <Route path="/blog" element={<BlogPage />} />
+                  <Route path="/blog/:slug" element={<BlogPostPage />} />
+                  <Route path="/contact" element={<ContactPage onToast={setToast} />} />
+                  <Route path="/admin" element={<AdminPage onToast={setToast} />} />
+                  <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+              </React.Suspense>
             </motion.div>
           </AnimatePresence>
         </main>

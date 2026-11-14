@@ -4,6 +4,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   Monitor,
+  MousePointerClick,
   Smartphone,
   X,
 } from 'lucide-react';
@@ -26,6 +27,11 @@ export default function ProjectPreviewModal({
   onNavigate,
 }: ProjectPreviewModalProps) {
   const [viewport, setViewport] = useState<'desktop' | 'mobile'>('desktop');
+  const [interactive, setInteractive] = useState<boolean>(false);
+
+  useEffect(() => {
+    setInteractive(false);
+  }, [project?.id]);
 
   useEffect(() => {
     if (!project) return;
@@ -75,7 +81,7 @@ export default function ProjectPreviewModal({
             <p className="text-sm font-medium text-[#C84B13] mt-0.5">{project.domain}</p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <div
               role="group"
               aria-label="Preview screen size"
@@ -111,6 +117,25 @@ export default function ProjectPreviewModal({
 
             <button
               type="button"
+              aria-pressed={interactive}
+              onClick={() => setInteractive((prev) => !prev)}
+              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer border transition-colors ${
+                interactive
+                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
+                  : 'bg-zinc-100 border-zinc-200/80 text-zinc-600 hover:text-[#09090B]'
+              }`}
+              title={
+                interactive
+                  ? 'Interactive mode active (click and scroll enabled)'
+                  : 'Switch to interactive mode to click and scroll the preview'
+              }
+            >
+              <MousePointerClick className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>{interactive ? 'Interactive' : 'Interact'}</span>
+            </button>
+
+            <button
+              type="button"
               onClick={onClose}
               aria-label="Close project preview"
               className="w-9 h-9 rounded-xl border border-zinc-200 bg-white flex items-center justify-center text-zinc-700 hover:bg-zinc-50 hover:text-[#09090B] cursor-pointer transition-colors"
@@ -121,7 +146,12 @@ export default function ProjectPreviewModal({
         </div>
 
         <div className="mt-6 rounded-2xl bg-[#F6F6F7] border border-zinc-200/80 p-4 sm:p-6">
-          <ProjectSitePreview project={project} size="modal" viewport={viewport} />
+          <ProjectSitePreview
+            project={project}
+            size="modal"
+            viewport={viewport}
+            interactive={interactive}
+          />
         </div>
 
         <div className="mt-6 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">

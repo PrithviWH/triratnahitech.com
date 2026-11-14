@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Code2, Sparkles, TrendingUp } from 'lucide-react';
 import { HOME_COPY } from '../data/siteData';
 import {
   Button,
@@ -96,47 +96,168 @@ export default function HomePage() {
       />
 
       {/* 2. ABOUT TEASER */}
-      <section className="py-20 sm:py-28 bg-white">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8">
+      <section className="py-20 sm:py-28 bg-white relative overflow-hidden">
+        {/* Subtle background ambient mesh */}
+        <div
+          aria-hidden="true"
+          className="absolute -top-40 right-0 w-96 h-96 bg-radial from-[#C84B13]/5 via-transparent to-transparent pointer-events-none"
+        />
+
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+            {/* Left: Studio Milestone & Credibility Card */}
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.45 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               className="lg:col-span-5"
             >
               <SectionLabel number="01" label="Experience" />
-              <div className="rounded-2xl border border-zinc-200 bg-[#FAFAFA] p-8 sm:p-10 card-elevated">
-                <p
-                  aria-label="Over 6 years"
-                  className="font-display font-extrabold text-[clamp(4.5rem,9vw,7.5rem)] leading-[0.88] tracking-tighter bg-gradient-to-br from-[#09090B] via-[#09090B] to-[#C84B13] bg-clip-text text-transparent tabular-nums select-none"
-                >
-                  6+
-                </p>
-                <p className="font-display text-xs font-semibold uppercase tracking-[0.14em] text-[#0F4C5C] mt-4">
-                  Years Helping Businesses Grow
-                </p>
+
+              <div className="relative rounded-3xl border border-zinc-200/90 bg-gradient-to-b from-white via-zinc-50/70 to-[#FAFAFA] p-7 sm:p-9 shadow-[0_24px_55px_-18px_rgba(9,9,11,0.08)] overflow-hidden">
+                {/* Copper Specular Hairline */}
+                <div
+                  aria-hidden="true"
+                  className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-[#C84B13]/60 to-transparent pointer-events-none"
+                />
+
+                {/* Decorative Warm Radial Glow */}
+                <div
+                  aria-hidden="true"
+                  className="absolute -top-16 -right-16 w-48 h-48 bg-radial from-[#EA580C]/15 via-transparent to-transparent pointer-events-none"
+                />
+
+                {/* Top Badge: Verified Record */}
+                <div className="flex items-center justify-between gap-3 mb-6">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-zinc-200/80 shadow-2xs">
+                    <span className="w-2 h-2 rounded-full bg-[#EA580C] animate-pulse" />
+                    <span className="font-display text-[11px] font-semibold tracking-wide uppercase text-zinc-700">
+                      Est. 2020 · Pune, India
+                    </span>
+                  </div>
+                  <span className="font-display text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[#0F4C5C]/80">
+                    Proven Agency Record
+                  </span>
+                </div>
+
+                {/* Hero Stat: 6+ */}
+                <div className="space-y-3">
+                  <div className="flex items-baseline gap-2.5">
+                    <p
+                      aria-label="Over 6 years of experience"
+                      className="font-display font-black text-[clamp(4.8rem,9.5vw,7.8rem)] leading-[0.85] tracking-tighter bg-gradient-to-br from-[#09090B] via-[#18181B] to-[#C84B13] bg-clip-text text-transparent tabular-nums select-none"
+                    >
+                      6+
+                    </p>
+                    <span className="font-serif-accent italic text-2xl sm:text-3xl text-[#C84B13] font-medium">
+                      Years
+                    </span>
+                  </div>
+
+                  <p className="font-display text-[13px] font-bold uppercase tracking-[0.14em] text-[#0F4C5C]">
+                    Helping Businesses Grow &amp; Scale
+                  </p>
+                  <p className="font-body text-xs sm:text-sm text-zinc-500 leading-relaxed">
+                    Transforming ambition into high-converting web applications, dominant SEO search visibility, and repeatable digital growth channels.
+                  </p>
+                </div>
+
+                {/* Micro-metrics bento strip */}
+                <div className="mt-7 pt-6 border-t border-zinc-200/80 grid grid-cols-2 gap-3.5">
+                  <div className="rounded-xl bg-white/90 border border-zinc-200/80 p-3 shadow-2xs">
+                    <span className="block font-display font-extrabold text-lg text-[#09090B] tabular-nums">
+                      12+
+                    </span>
+                    <span className="block font-body text-[11px] text-zinc-500 font-medium">
+                      Live Client Platforms
+                    </span>
+                  </div>
+                  <div className="rounded-xl bg-white/90 border border-zinc-200/80 p-3 shadow-2xs">
+                    <span className="block font-display font-extrabold text-lg text-[#09090B] tabular-nums">
+                      100%
+                    </span>
+                    <span className="block font-body text-[11px] text-zinc-500 font-medium">
+                      Founder-Led Execution
+                    </span>
+                  </div>
+                </div>
               </div>
             </motion.div>
 
+            {/* Right: Editorial Narrative & Action Hub */}
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.45, delay: 0.08 }}
+              transition={{ duration: 0.5, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
               className="lg:col-span-7 space-y-6"
             >
-              <h2 className="font-display font-bold text-3xl sm:text-5xl tracking-tight text-[#09090B] text-balance">
-                {HOME_COPY.aboutTeaser.title}
-              </h2>
-              <p className="font-body text-lg sm:text-xl leading-relaxed text-zinc-600 max-w-2xl">
-                {HOME_COPY.aboutTeaser.text}
+              <div className="space-y-3">
+                <h2 className="font-display font-extrabold text-3xl sm:text-5xl tracking-tight text-[#09090B] text-balance leading-[1.08]">
+                  About Triratna{' '}
+                  <span className="font-serif-accent italic font-normal text-[#C84B13]">
+                    Hi-Tech
+                  </span>
+                </h2>
+                <p className="font-display text-sm sm:text-base font-semibold text-zinc-700">
+                  Engineering practical digital growth for ambitious enterprises and regional leaders.
+                </p>
+              </div>
+
+              <p className="font-body text-base sm:text-lg leading-relaxed text-zinc-600">
+                {HOME_COPY.aboutTeaser.text} Built on deep technical expertise and genuine commercial clarity, we eliminate agency guesswork with clean code, data-driven organic search, and direct, hands-on guidance.
               </p>
-              <div>
-                <Button to="/about#team" variant="secondary">
+
+              {/* 3 Value Pillars */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-1 pb-1">
+                <div className="rounded-xl border border-zinc-200/90 bg-[#FAFAFA] p-3.5 space-y-1.5 transition-colors hover:border-[#C84B13]/40">
+                  <div className="w-7 h-7 rounded-lg bg-white border border-zinc-200/80 flex items-center justify-center text-[#C84B13] shadow-2xs">
+                    <Code2 className="w-4 h-4" aria-hidden="true" />
+                  </div>
+                  <h3 className="font-display font-bold text-xs text-[#09090B]">
+                    Custom Web Apps
+                  </h3>
+                  <p className="font-body text-[11px] text-zinc-500 leading-snug">
+                    Lightning-fast, mobile-first architectures designed to convert.
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-zinc-200/90 bg-[#FAFAFA] p-3.5 space-y-1.5 transition-colors hover:border-[#C84B13]/40">
+                  <div className="w-7 h-7 rounded-lg bg-white border border-zinc-200/80 flex items-center justify-center text-[#0F4C5C] shadow-2xs">
+                    <TrendingUp className="w-4 h-4" aria-hidden="true" />
+                  </div>
+                  <h3 className="font-display font-bold text-xs text-[#09090B]">
+                    Organic SEO &amp; Ads
+                  </h3>
+                  <p className="font-body text-[11px] text-zinc-500 leading-snug">
+                    First-page Google rankings &amp; high-intent paid campaigns.
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-zinc-200/90 bg-[#FAFAFA] p-3.5 space-y-1.5 transition-colors hover:border-[#C84B13]/40">
+                  <div className="w-7 h-7 rounded-lg bg-white border border-zinc-200/80 flex items-center justify-center text-[#EA580C] shadow-2xs">
+                    <Sparkles className="w-4 h-4" aria-hidden="true" />
+                  </div>
+                  <h3 className="font-display font-bold text-xs text-[#09090B]">
+                    Direct Advisory
+                  </h3>
+                  <p className="font-body text-[11px] text-zinc-500 leading-snug">
+                    1-on-1 strategic guidance with zero agency bureaucracy.
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-4 pt-2">
+                <Button to="/about#team" variant="primary">
                   <span>{HOME_COPY.aboutTeaser.cta}</span>
                   <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                </Button>
+
+                <Button to="/projects" variant="ghost">
+                  <span>View Our Work</span>
+                  <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
                 </Button>
               </div>
             </motion.div>

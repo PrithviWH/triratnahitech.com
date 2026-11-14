@@ -119,7 +119,7 @@ export function Navigation() {
                   aria-current={isActive ? 'page' : undefined}
                   onMouseEnter={() => setHoveredPath(item.path)}
                   onFocus={() => setHoveredPath(item.path)}
-                  className={`relative px-[12.36px] xl:px-[14.42px] py-[6.18px] rounded-lg font-display text-[13.39px] font-semibold tracking-tight whitespace-nowrap shrink-0 transition-colors duration-150 ${
+                  className={`relative px-[12.73px] xl:px-[14.85px] py-[6.37px] rounded-lg font-display text-[13.79px] font-semibold tracking-tight whitespace-nowrap shrink-0 transition-colors duration-150 ${
                     isActive
                       ? 'text-white'
                       : 'text-zinc-600 hover:text-[#09090B]'
@@ -266,7 +266,7 @@ export function Navigation() {
                         to={item.path}
                         aria-current={isActive ? 'page' : undefined}
                         onClick={() => setMobileOpen(false)}
-                        className={`group flex items-center justify-between rounded-xl px-[16.48px] py-[14.42px] border transition-all ${
+                        className={`group flex items-center justify-between rounded-xl px-[16.97px] py-[14.85px] border transition-all ${
                           isActive
                             ? 'bg-white/10 border-[#C84B13]/70 text-white'
                             : 'bg-white/[0.02] border-white/10 text-zinc-300 hover:bg-white/[0.06] hover:text-white'
@@ -274,13 +274,13 @@ export function Navigation() {
                       >
                         <div className="flex items-center gap-3">
                           <span
-                            className={`font-display text-[12.36px] font-semibold tabular-nums ${
+                            className={`font-display text-[12.73px] font-semibold tabular-nums ${
                               isActive ? 'text-[#F59E0B]' : 'text-zinc-500'
                             }`}
                           >
                             {item.index}
                           </span>
-                          <span className="font-display font-bold text-[18.54px] tracking-tight">
+                          <span className="font-display font-bold text-[19.1px] tracking-tight">
                             {item.label}
                           </span>
                         </div>

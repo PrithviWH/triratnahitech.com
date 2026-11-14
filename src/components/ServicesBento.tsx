@@ -118,7 +118,7 @@ function WebStudioPreview({ mode, onModeChange }: { mode: DeviceMode; onModeChan
           </div>
           <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white border border-zinc-200/80 text-[11px] font-medium text-zinc-600 truncate">
             <Globe className="w-3 h-3 text-[#C84B13] shrink-0" aria-hidden="true" />
-            <span className="truncate">triratnahitech.in</span>
+            <span className="truncate">triratnahitech.com</span>
           </div>
         </div>
 

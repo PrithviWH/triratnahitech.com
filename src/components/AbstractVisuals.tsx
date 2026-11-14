@@ -26,7 +26,7 @@ export function HeroBrowserMockup() {
             <span className="w-2.5 h-2.5 rounded-full bg-zinc-300" />
           </div>
           <div className="px-3.5 py-1 rounded-md bg-white border border-zinc-200/80 text-[11px] font-medium text-zinc-500 shadow-2xs">
-            triratnahitech.in
+            triratnahitech.com
           </div>
           <div className="w-8" />
         </div>

@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import {
   analyzeHtmlForAudit,
@@ -178,7 +179,38 @@ async function startServer() {
     }
   });
 
-  if (process.env.NODE_ENV !== 'production') {
+  const distDir = path.resolve(currentDir, 'dist');
+  const distIndexExists = fs.existsSync(path.join(distDir, 'index.html'));
+  const isLifecycleDev = process.env.npm_lifecycle_event === 'dev';
+  const isExplicitDev = process.env.NODE_ENV === 'development' || isLifecycleDev;
+  const isProduction =
+    process.env.NODE_ENV === 'production' ||
+    process.env.APP_ENV === 'production' ||
+    Boolean(process.env.K_SERVICE) ||
+    (!isExplicitDev && distIndexExists);
+
+  if (isProduction) {
+    if (!distIndexExists) {
+      console.warn('[warning] Production mode active but dist/index.html not found. Please run "npm run build".');
+    }
+    // Serve static production bundle with caching headers
+    app.use(
+      express.static(distDir, {
+        maxAge: '1d',
+        setHeaders: (res, filePath) => {
+          // Fingerprinted production assets in dist/assets can be cached immutably
+          if (filePath.includes(path.sep + 'assets' + path.sep)) {
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+          }
+        },
+      })
+    );
+    // SPA catch-all fallback
+    app.get('*', (_req, res) => {
+      res.sendFile(path.join(distDir, 'index.html'));
+    });
+    console.log(`[production] Serving compiled static build from ${distDir}`);
+  } else {
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: {
@@ -188,12 +220,7 @@ async function startServer() {
       appType: 'spa',
     });
     app.use(vite.middlewares);
-  } else {
-    const distDir = path.resolve(currentDir, 'dist');
-    app.use(express.static(distDir));
-    app.get('*', (_req, res) => {
-      res.sendFile(path.join(distDir, 'index.html'));
-    });
+    console.log('[development] Running Vite middleware mode');
   }
 
   app.listen(PORT, '0.0.0.0', () => {

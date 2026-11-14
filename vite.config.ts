@@ -90,7 +90,13 @@ function previewProxyPlugin(): Plugin {
 }
 
 export default defineConfig(() => {
+  // Support relative paths ('./') for static/CDN deployments or explicit live domain via VITE_BASE_URL / APP_URL
+  const base =
+    process.env.VITE_BASE_URL ||
+    (process.env.USE_RELATIVE_PATHS === 'true' ? './' : '/');
+
   return {
+    base,
     plugins: [react(), tailwindcss(), previewProxyPlugin()],
     optimizeDeps: {
       include: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
@@ -98,6 +104,30 @@ export default defineConfig(() => {
     resolve: {
       alias: {
         '@': path.resolve(import.meta.dirname ?? '.', '.'),
+      },
+    },
+    build: {
+      outDir: 'dist',
+      assetsDir: 'assets',
+      sourcemap: false,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (
+              id.includes('node_modules/react/') ||
+              id.includes('node_modules/react-dom/') ||
+              id.includes('node_modules/react-router-dom/')
+            ) {
+              return 'vendor-react';
+            }
+            if (
+              id.includes('node_modules/motion/') ||
+              id.includes('node_modules/lucide-react/')
+            ) {
+              return 'vendor-ui';
+            }
+          },
+        },
       },
     },
     server: {

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { getPageSeo } from '../utils/siteLogic';
+import { SITE_INFO } from '../data/siteData';
 
 export function SeoHead({
   customTitle,
@@ -29,7 +30,15 @@ export function SeoHead({
     updateMeta('meta[name="twitter:title"]', 'content', title);
     updateMeta('meta[name="twitter:description"]', 'content', description);
 
-    const canonicalUrl = `${window.location.origin}${pathname}`;
+    // Ensure canonical and og:url always resolve to the actual live domain
+    // instead of local dev server links (e.g. localhost:3000)
+    const isLocalhost =
+      typeof window !== 'undefined' &&
+      (window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1' ||
+        window.location.hostname.endsWith('.localhost'));
+    const origin = isLocalhost ? SITE_INFO.liveUrl : window.location.origin;
+    const canonicalUrl = `${origin}${pathname}`;
     updateMeta('meta[property="og:url"]', 'content', canonicalUrl);
 
     let canonical = document.querySelector('link[rel="canonical"]');

@@ -82,6 +82,8 @@ export interface TeamMemberPlaceholder {
 
 export const SITE_INFO = {
   name: 'Triratna Hi-Tech',
+  liveUrl: 'https://triratnahitech.com',
+  domain: 'triratnahitech.com',
   email: 'triratnahitech@gmail.com',
   phoneDisplay: '(+91) 8169598429',
   phoneRaw: '+918169598429',

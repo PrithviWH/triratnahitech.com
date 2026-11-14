@@ -253,7 +253,7 @@ export function ClientsProjectsShowcase({
             </div>
 
             <p className="font-body text-xs text-zinc-500">
-              Click any live preview below to inspect Desktop &amp; Mobile layouts or visit the live domain.
+              Click any live preview below to inspect the live desktop viewport or visit the live domain.
             </p>
           </div>
 

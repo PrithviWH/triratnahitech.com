@@ -5,7 +5,6 @@ import {
   ArrowUpRight,
   Monitor,
   MousePointerClick,
-  Smartphone,
   X,
 } from 'lucide-react';
 import type { ProjectItem } from '../data/siteData';
@@ -26,7 +25,7 @@ export default function ProjectPreviewModal({
   onClose,
   onNavigate,
 }: ProjectPreviewModalProps) {
-  const [viewport, setViewport] = useState<'desktop' | 'mobile'>('desktop');
+  const viewport = 'desktop';
   const [interactive, setInteractive] = useState<boolean>(false);
 
   useEffect(() => {
@@ -82,37 +81,9 @@ export default function ProjectPreviewModal({
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <div
-              role="group"
-              aria-label="Preview screen size"
-              className="inline-flex items-center p-1 rounded-xl bg-zinc-100 border border-zinc-200/80"
-            >
-              <button
-                type="button"
-                aria-pressed={viewport === 'desktop'}
-                onClick={() => setViewport('desktop')}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors ${
-                  viewport === 'desktop'
-                    ? 'bg-[#09090B] text-white'
-                    : 'text-zinc-600 hover:text-[#09090B]'
-                }`}
-              >
-                <Monitor className="w-3.5 h-3.5" aria-hidden="true" />
-                <span>Desktop</span>
-              </button>
-              <button
-                type="button"
-                aria-pressed={viewport === 'mobile'}
-                onClick={() => setViewport('mobile')}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors ${
-                  viewport === 'mobile'
-                    ? 'bg-[#09090B] text-white'
-                    : 'text-zinc-600 hover:text-[#09090B]'
-                }`}
-              >
-                <Smartphone className="w-3.5 h-3.5" aria-hidden="true" />
-                <span>Mobile</span>
-              </button>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-100 border border-zinc-200/80 text-xs font-semibold text-zinc-700 shadow-2xs">
+              <Monitor className="w-3.5 h-3.5 text-[#C84B13]" aria-hidden="true" />
+              <span>Desktop View</span>
             </div>
 
             <button
